@@ -1,0 +1,30 @@
+/**
+ * 自定义样式
+ * 可以在这里覆盖默认主题样式
+ */
+
+:root {
+  /* 品牌色 */
+  --vp-c-brand-1: #42b883;
+  --vp-c-brand-2: #35a373;
+  --vp-c-brand-3: #278263;
+  
+  /* 代码块背景色 */
+  --vp-code-block-bg: rgba(125, 125, 125, 0.04);
+}
+
+.dark {
+  --vp-code-block-bg: rgba(0, 0, 0, 0.2);
+}
+
+/* 自定义样式示例 */
+.vp-doc h1 {
+  border-bottom: 2px solid var(--vp-c-brand-1);
+  padding-bottom: 0.3em;
+}
+
+/* 代码块优化 */
+.vp-code-group {
+  margin: 16px 0;
+}
+
