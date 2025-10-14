@@ -5,7 +5,7 @@ export default defineConfig({
   // 如果仓库名是 java-learning-path，则设置为：base: '/java-learning-path/'
   // 如果仓库名是 你的用户名.github.io，则设置为：base: '/'
   // 本地开发时可以注释掉或设置为 '/'
-  // base: '/java-learning-path/', // 部署时取消注释并修改为你的仓库名
+  base: '/learning-path/', // 部署时取消注释并修改为你的仓库名
   
   title: "Java学习路线 2025",
   description: "详细的Java学习路线，从基础到微服务",
