@@ -112,5 +112,8 @@ export default defineConfig({
 
   markdown: {
     lineNumbers: true
-  }
+  },
+
+  // 忽略死链接检查（开发时建议设为 'warn'，生产环境可设为 true）
+  ignoreDeadLinks: true
 })
