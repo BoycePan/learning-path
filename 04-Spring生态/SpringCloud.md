@@ -48,13 +48,13 @@
 # application.yml
 spring:
   application:
-    name: user-service  # 服务名称
+    name: user-service # 服务名称
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848  # Nacos地址
-        namespace: public  # 命名空间
-        group: DEFAULT_GROUP  # 分组
+        server-addr: localhost:8848 # Nacos地址
+        namespace: public # 命名空间
+        group: DEFAULT_GROUP # 分组
 ```
 
 ```java
@@ -72,7 +72,7 @@ public class UserServiceApplication {
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    
+
     @GetMapping("/{id}")
     public User getById(@PathVariable Long id) {
         return new User(id, "张三", "zhang@example.com");
@@ -117,10 +117,10 @@ public class OrderServiceApplication {
  */
 @FeignClient(name = "user-service")  // 服务名称
 public interface UserFeignClient {
-    
+
     @GetMapping("/users/{id}")
     User getUserById(@PathVariable("id") Long id);
-    
+
     @PostMapping("/users")
     User createUser(@RequestBody User user);
 }
@@ -130,10 +130,10 @@ public interface UserFeignClient {
  */
 @Service
 public class OrderService {
-    
+
     @Autowired
     private UserFeignClient userFeignClient;
-    
+
     public void createOrder(Long userId) {
         // 远程调用用户服务
         User user = userFeignClient.getUserById(userId);
@@ -149,15 +149,15 @@ public class OrderService {
 feign:
   client:
     config:
-      default:  # 默认配置
-        connectTimeout: 5000  # 连接超时
-        readTimeout: 5000  # 读取超时
-        loggerLevel: basic  # 日志级别
+      default: # 默认配置
+        connectTimeout: 5000 # 连接超时
+        readTimeout: 5000 # 读取超时
+        loggerLevel: basic # 日志级别
   compression:
     request:
-      enabled: true  # 请求压缩
+      enabled: true # 请求压缩
     response:
-      enabled: true  # 响应压缩
+      enabled: true # 响应压缩
 ```
 
 ## 3. Gateway网关 ⭐⭐⭐⭐⭐
@@ -193,25 +193,25 @@ spring:
       discovery:
         server-addr: localhost:8848
     gateway:
-      routes:  # 路由配置 ⭐⭐⭐⭐⭐
-        - id: user-service  # 路由ID
-          uri: lb://user-service  # 负载均衡URI
-          predicates:  # 断言
-            - Path=/users/**  # 路径匹配
-          filters:  # 过滤器
-            - StripPrefix=0  # 去除前缀
-        
+      routes: # 路由配置 ⭐⭐⭐⭐⭐
+        - id: user-service # 路由ID
+          uri: lb://user-service # 负载均衡URI
+          predicates: # 断言
+            - Path=/users/** # 路径匹配
+          filters: # 过滤器
+            - StripPrefix=0 # 去除前缀
+
         - id: order-service
           uri: lb://order-service
           predicates:
             - Path=/orders/**
           filters:
-            - AddRequestHeader=X-Request-Gateway, Gateway  # 添加请求头
-      
+            - AddRequestHeader=X-Request-Gateway, Gateway # 添加请求头
+
       # 全局跨域配置 ⭐⭐⭐⭐⭐
       globalcors:
         corsConfigurations:
-          '[/**]':
+          "[/**]":
             allowedOrigins: "*"
             allowedMethods: "*"
             allowedHeaders: "*"
@@ -226,23 +226,23 @@ spring:
 @Component
 @Slf4j
 public class AuthGlobalFilter implements GlobalFilter, Ordered {
-    
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String token = exchange.getRequest().getHeaders().getFirst("Authorization");
-        
+
         if (StringUtils.isBlank(token)) {
             log.warn("未登录访问");
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
-        
+
         // 验证token
         // ...
-        
+
         return chain.filter(exchange);
     }
-    
+
     @Override
     public int getOrder() {
         return -1;  // 优先级
@@ -270,9 +270,9 @@ spring:
   cloud:
     sentinel:
       transport:
-        dashboard: localhost:8080  # Sentinel控制台地址
-        port: 8719  # 与控制台通信端口
-      eager: true  # 启动时加载
+        dashboard: localhost:8080 # Sentinel控制台地址
+        port: 8719 # 与控制台通信端口
+      eager: true # 启动时加载
 ```
 
 ### 限流降级
@@ -283,7 +283,7 @@ spring:
  */
 @Service
 public class UserService {
-    
+
     /**
      * @SentinelResource注解 ⭐⭐⭐⭐⭐
      * value: 资源名称
@@ -299,14 +299,14 @@ public class UserService {
         // 业务逻辑
         return new User(id, "张三", "zhang@example.com");
     }
-    
+
     /**
      * 限流处理 ⭐⭐⭐⭐⭐
      */
     public User getUserByIdBlockHandler(Long id, BlockException ex) {
         return new User(id, "限流用户", "blocked@example.com");
     }
-    
+
     /**
      * 异常降级 ⭐⭐⭐⭐⭐
      */
@@ -364,11 +364,11 @@ spring:
   cloud:
     nacos:
       config:
-        server-addr: localhost:8848  # Nacos地址
-        file-extension: yaml  # 配置文件格式
+        server-addr: localhost:8848 # Nacos地址
+        file-extension: yaml # 配置文件格式
         namespace: public
         group: DEFAULT_GROUP
-        refresh-enabled: true  # 动态刷新
+        refresh-enabled: true # 动态刷新
 ```
 
 ### 动态刷新配置
@@ -381,13 +381,13 @@ spring:
 @RequestMapping("/config")
 @RefreshScope  // 启用配置刷新
 public class ConfigController {
-    
+
     @Value("${app.name}")
     private String appName;
-    
+
     @Value("${app.version}")
     private String appVersion;
-    
+
     @GetMapping("/info")
     public String getInfo() {
         return "应用：" + appName + "，版本：" + appVersion;
@@ -428,16 +428,16 @@ seata:
  */
 @Service
 public class OrderService {
-    
+
     @Autowired
     private OrderMapper orderMapper;
-    
+
     @Autowired
     private ProductFeignClient productFeignClient;
-    
+
     @Autowired
     private AccountFeignClient accountFeignClient;
-    
+
     /**
      * @GlobalTransactional标记全局事务 ⭐⭐⭐⭐⭐
      */
@@ -448,13 +448,13 @@ public class OrderService {
     public void createOrder(Order order) {
         // 1. 创建订单
         orderMapper.insert(order);
-        
+
         // 2. 扣减库存（远程调用）
         productFeignClient.deductStock(order.getProductId(), order.getCount());
-        
+
         // 3. 扣减账户余额（远程调用）
         accountFeignClient.deduct(order.getUserId(), order.getAmount());
-        
+
         // 如果任何一步失败，全部回滚
     }
 }
@@ -529,15 +529,15 @@ public class OrderService {
 
 ### Spring Cloud Alibaba组件选型 ⭐⭐⭐⭐⭐
 
-| 功能 | 组件 | 推荐度 |
-|------|------|--------|
-| 注册中心 | Nacos | ⭐⭐⭐⭐⭐ |
-| 配置中心 | Nacos Config | ⭐⭐⭐⭐⭐ |
-| 服务调用 | OpenFeign | ⭐⭐⭐⭐⭐ |
-| 负载均衡 | LoadBalancer | ⭐⭐⭐⭐⭐ |
-| 网关 | Gateway | ⭐⭐⭐⭐⭐ |
-| 限流熔断 | Sentinel | ⭐⭐⭐⭐⭐ |
-| 分布式事务 | Seata | ⭐⭐⭐⭐⭐ |
+| 功能       | 组件         | 推荐度     |
+| ---------- | ------------ | ---------- |
+| 注册中心   | Nacos        | ⭐⭐⭐⭐⭐ |
+| 配置中心   | Nacos Config | ⭐⭐⭐⭐⭐ |
+| 服务调用   | OpenFeign    | ⭐⭐⭐⭐⭐ |
+| 负载均衡   | LoadBalancer | ⭐⭐⭐⭐⭐ |
+| 网关       | Gateway      | ⭐⭐⭐⭐⭐ |
+| 限流熔断   | Sentinel     | ⭐⭐⭐⭐⭐ |
+| 分布式事务 | Seata        | ⭐⭐⭐⭐⭐ |
 
 ### 微服务开发流程 ⭐⭐⭐⭐⭐
 
@@ -563,4 +563,3 @@ public class OrderService {
 ## 🎯 下一步
 
 完成Spring生态学习后，继续学习 [微服务与中间件](../05-微服务与中间件/)
-

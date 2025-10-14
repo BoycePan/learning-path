@@ -28,21 +28,21 @@
         <artifactId>mybatis</artifactId>
         <version>3.5.13</version>
     </dependency>
-    
+
     <!-- MySQL驱动 -->
     <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
         <version>8.0.33</version>
     </dependency>
-    
+
     <!-- MyBatis-Spring（Spring集成） -->
     <dependency>
         <groupId>org.mybatis.spring.boot</groupId>
         <artifactId>mybatis-spring-boot-starter</artifactId>
         <version>3.0.2</version>
     </dependency>
-    
+
     <!-- MyBatis-Plus（推荐） ⭐⭐⭐⭐⭐ -->
     <dependency>
         <groupId>com.baomidou</groupId>
@@ -70,12 +70,12 @@
         <!-- 懒加载 -->
         <setting name="lazyLoadingEnabled" value="true"/>
     </settings>
-    
+
     <!-- 类型别名 ⭐⭐⭐⭐ -->
     <typeAliases>
         <package name="com.example.entity"/>
     </typeAliases>
-    
+
     <!-- 环境配置 -->
     <environments default="development">
         <environment id="development">
@@ -88,7 +88,7 @@
             </dataSource>
         </environment>
     </environments>
-    
+
     <!-- Mapper映射 ⭐⭐⭐⭐⭐ -->
     <mappers>
         <package name="com.example.mapper"/>
@@ -112,7 +112,7 @@ public class User {
     private Integer age;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
-    
+
     // Getters and Setters
     // 构造方法
     // toString
@@ -128,19 +128,19 @@ public class User {
 public interface UserMapper {
     // 插入
     int insert(User user);
-    
+
     // 删除
     int deleteById(Long id);
-    
+
     // 更新
     int update(User user);
-    
+
     // 根据ID查询
     User selectById(Long id);
-    
+
     // 查询所有
     List<User> selectAll();
-    
+
     // 条件查询
     List<User> selectByCondition(String username, Integer age);
 }
@@ -155,7 +155,7 @@ public interface UserMapper {
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.mapper.UserMapper">
-    
+
     <!-- 结果映射 ⭐⭐⭐⭐⭐ -->
     <resultMap id="userResultMap" type="User">
         <id property="id" column="id"/>
@@ -166,13 +166,13 @@ public interface UserMapper {
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
-    
+
     <!-- 插入 ⭐⭐⭐⭐⭐ -->
     <insert id="insert" parameterType="User" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO users (username, password, email, age, create_time)
         VALUES (#{username}, #{password}, #{email}, #{age}, NOW())
     </insert>
-    
+
     <!-- 批量插入 ⭐⭐⭐⭐ -->
     <insert id="insertBatch">
         INSERT INTO users (username, password, email, age)
@@ -181,12 +181,12 @@ public interface UserMapper {
             (#{user.username}, #{user.password}, #{user.email}, #{user.age})
         </foreach>
     </insert>
-    
+
     <!-- 删除 ⭐⭐⭐⭐⭐ -->
     <delete id="deleteById">
         DELETE FROM users WHERE id = #{id}
     </delete>
-    
+
     <!-- 更新 ⭐⭐⭐⭐⭐ -->
     <update id="update">
         UPDATE users
@@ -196,17 +196,17 @@ public interface UserMapper {
             update_time = NOW()
         WHERE id = #{id}
     </update>
-    
+
     <!-- 查询单个 ⭐⭐⭐⭐⭐ -->
     <select id="selectById" resultMap="userResultMap">
         SELECT * FROM users WHERE id = #{id}
     </select>
-    
+
     <!-- 查询所有 ⭐⭐⭐⭐⭐ -->
     <select id="selectAll" resultMap="userResultMap">
         SELECT * FROM users ORDER BY create_time DESC
     </select>
-    
+
     <!-- 条件查询 ⭐⭐⭐⭐⭐ -->
     <select id="selectByCondition" resultMap="userResultMap">
         SELECT * FROM users
@@ -231,22 +231,22 @@ import org.apache.ibatis.annotations.*;
  */
 @Mapper
 public interface UserMapper {
-    
+
     // 插入 ⭐⭐⭐⭐⭐
     @Insert("INSERT INTO users(username, password, email, age) " +
             "VALUES(#{username}, #{password}, #{email}, #{age})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(User user);
-    
+
     // 删除 ⭐⭐⭐⭐⭐
     @Delete("DELETE FROM users WHERE id = #{id}")
     int deleteById(@Param("id") Long id);
-    
+
     // 更新 ⭐⭐⭐⭐⭐
     @Update("UPDATE users SET username=#{username}, email=#{email}, " +
             "age=#{age} WHERE id=#{id}")
     int update(User user);
-    
+
     // 查询单个 ⭐⭐⭐⭐⭐
     @Select("SELECT * FROM users WHERE id = #{id}")
     @Results(id = "userResultMap", value = {
@@ -255,12 +255,12 @@ public interface UserMapper {
         @Result(property = "createTime", column = "create_time")
     })
     User selectById(@Param("id") Long id);
-    
+
     // 查询所有 ⭐⭐⭐⭐⭐
     @Select("SELECT * FROM users ORDER BY create_time DESC")
     @ResultMap("userResultMap")
     List<User> selectAll();
-    
+
     // 条件查询（复杂SQL建议用XML） ⭐⭐⭐⭐
     @SelectProvider(type = UserSqlProvider.class, method = "selectByCondition")
     List<User> selectByCondition(String username, Integer age);
@@ -286,7 +286,7 @@ class UserSqlProvider {
 ```xml
 <!-- 动态SQL示例 -->
 <mapper namespace="com.example.mapper.UserMapper">
-    
+
     <!-- if标签 ⭐⭐⭐⭐⭐ -->
     <select id="selectByCondition" resultMap="userResultMap">
         SELECT * FROM users
@@ -301,7 +301,7 @@ class UserSqlProvider {
             AND email = #{email}
         </if>
     </select>
-    
+
     <!-- choose-when-otherwise（类似switch） ⭐⭐⭐⭐ -->
     <select id="selectByType" resultMap="userResultMap">
         SELECT * FROM users
@@ -318,7 +318,7 @@ class UserSqlProvider {
             </otherwise>
         </choose>
     </select>
-    
+
     <!-- where标签（自动处理AND/OR） ⭐⭐⭐⭐⭐ -->
     <select id="selectByWhere" resultMap="userResultMap">
         SELECT * FROM users
@@ -331,7 +331,7 @@ class UserSqlProvider {
             </if>
         </where>
     </select>
-    
+
     <!-- set标签（更新时使用） ⭐⭐⭐⭐⭐ -->
     <update id="updateSelective">
         UPDATE users
@@ -343,7 +343,7 @@ class UserSqlProvider {
         </set>
         WHERE id = #{id}
     </update>
-    
+
     <!-- foreach标签（IN查询） ⭐⭐⭐⭐⭐ -->
     <select id="selectByIds" resultMap="userResultMap">
         SELECT * FROM users
@@ -352,7 +352,7 @@ class UserSqlProvider {
             #{id}
         </foreach>
     </select>
-    
+
     <!-- trim标签（自定义前缀后缀） ⭐⭐⭐⭐ -->
     <select id="selectByTrim" resultMap="userResultMap">
         SELECT * FROM users
@@ -384,27 +384,27 @@ import org.apache.ibatis.annotations.Mapper;
 public class User {
     @TableId(type = IdType.AUTO)  // 主键自增
     private Long id;
-    
+
     private String username;
-    
+
     private String password;
-    
+
     private String email;
-    
+
     private Integer age;
-    
+
     @TableField(fill = FieldFill.INSERT)  // 插入时自动填充
     private LocalDateTime createTime;
-    
+
     @TableField(fill = FieldFill.INSERT_UPDATE)  // 插入和更新时填充
     private LocalDateTime updateTime;
-    
+
     @TableLogic  // 逻辑删除
     private Integer deleted;
-    
+
     @Version  // 乐观锁
     private Integer version;
-    
+
     // Getters and Setters
 }
 
@@ -433,7 +433,7 @@ public interface UserService extends IService<User> {
  * Service实现类 ⭐⭐⭐⭐⭐
  */
 @Service
-public class UserServiceImpl extends ServiceImpl<UserMapper, User> 
+public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     implements UserService {
     // 直接继承ServiceImpl，无需实现基础方法
 }
@@ -453,7 +453,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 public class UserServiceExample {
     @Autowired
     private UserMapper userMapper;
-    
+
     /**
      * 基础CRUD ⭐⭐⭐⭐⭐
      */
@@ -463,21 +463,21 @@ public class UserServiceExample {
         user.setUsername("zhangsan");
         user.setEmail("zhang@example.com");
         userMapper.insert(user);
-        
+
         // 根据ID查询
         User queryUser = userMapper.selectById(1L);
-        
+
         // 更新
         user.setAge(26);
         userMapper.updateById(user);
-        
+
         // 删除
         userMapper.deleteById(1L);
-        
+
         // 批量删除
         userMapper.deleteBatchIds(Arrays.asList(1L, 2L, 3L));
     }
-    
+
     /**
      * 条件构造器（QueryWrapper） ⭐⭐⭐⭐⭐
      */
@@ -486,7 +486,7 @@ public class UserServiceExample {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         wrapper.eq("username", "zhangsan");
         List<User> users = userMapper.selectList(wrapper);
-        
+
         // 复杂条件
         QueryWrapper<User> wrapper2 = new QueryWrapper<>();
         wrapper2.like("username", "zhang")
@@ -494,23 +494,23 @@ public class UserServiceExample {
                 .le("age", 30)  // age <= 30
                 .orderByDesc("create_time");
         List<User> result = userMapper.selectList(wrapper2);
-        
+
         // 或条件
         QueryWrapper<User> wrapper3 = new QueryWrapper<>();
         wrapper3.eq("username", "zhangsan")
                 .or()
                 .eq("email", "zhang@example.com");
-        
+
         // IN查询
         QueryWrapper<User> wrapper4 = new QueryWrapper<>();
         wrapper4.in("id", Arrays.asList(1, 2, 3, 4, 5));
-        
+
         // 排序
         QueryWrapper<User> wrapper5 = new QueryWrapper<>();
         wrapper5.orderByAsc("age")
                 .orderByDesc("create_time");
     }
-    
+
     /**
      * Lambda条件构造器（推荐，类型安全） ⭐⭐⭐⭐⭐
      */
@@ -521,7 +521,7 @@ public class UserServiceExample {
                .ge(User::getAge, 18)
                .orderByDesc(User::getCreateTime);
         List<User> users = userMapper.selectList(wrapper);
-        
+
         // 链式写法（更简洁）
         List<User> result = userMapper.selectList(
             new LambdaQueryWrapper<User>()
@@ -530,35 +530,35 @@ public class UserServiceExample {
                 .orderByDesc(User::getCreateTime)
         );
     }
-    
+
     /**
      * 分页查询 ⭐⭐⭐⭐⭐
      */
     public Page<User> pageQuery(int pageNum, int pageSize) {
         // 创建分页对象
         Page<User> page = new Page<>(pageNum, pageSize);
-        
+
         // 分页查询
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         wrapper.ge(User::getAge, 18)
                .orderByDesc(User::getCreateTime);
-        
+
         Page<User> result = userMapper.selectPage(page, wrapper);
-        
+
         // 获取结果
         List<User> records = result.getRecords();  // 数据列表
         long total = result.getTotal();            // 总记录数
         long pages = result.getPages();            // 总页数
-        
+
         return result;
     }
-    
+
     /**
      * 批量操作（IService提供） ⭐⭐⭐⭐⭐
      */
     @Autowired
     private UserService userService;
-    
+
     public void batchOperations() {
         // 批量插入
         List<User> users = new ArrayList<>();
@@ -568,19 +568,19 @@ public class UserServiceExample {
             users.add(user);
         }
         userService.saveBatch(users);
-        
+
         // 批量更新
         userService.updateBatchById(users);
-        
+
         // 保存或更新（根据ID判断）
         userService.saveOrUpdate(new User());
-        
+
         // 链式查询
         List<User> list = userService.lambdaQuery()
             .eq(User::getAge, 25)
             .like(User::getUsername, "zhang")
             .list();
-        
+
         // 链式更新
         boolean success = userService.lambdaUpdate()
             .set(User::getAge, 26)
@@ -624,14 +624,14 @@ mybatis-plus:
 
 ### MyBatis vs MyBatis-Plus ⭐⭐⭐⭐⭐
 
-| 特性 | MyBatis | MyBatis-Plus |
-|------|---------|-------------|
-| CRUD | 需要手写SQL | 自动生成 ⭐⭐⭐⭐⭐ |
-| 分页 | 需要插件 | 内置支持 ⭐⭐⭐⭐⭐ |
-| 条件构造 | 动态SQL | QueryWrapper ⭐⭐⭐⭐⭐ |
-| 批量操作 | 手写foreach | saveBatch ⭐⭐⭐⭐⭐ |
-| 学习曲线 | 较陡 | 简单 ⭐⭐⭐⭐⭐ |
-| 推荐度 | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| 特性     | MyBatis     | MyBatis-Plus            |
+| -------- | ----------- | ----------------------- |
+| CRUD     | 需要手写SQL | 自动生成 ⭐⭐⭐⭐⭐     |
+| 分页     | 需要插件    | 内置支持 ⭐⭐⭐⭐⭐     |
+| 条件构造 | 动态SQL     | QueryWrapper ⭐⭐⭐⭐⭐ |
+| 批量操作 | 手写foreach | saveBatch ⭐⭐⭐⭐⭐    |
+| 学习曲线 | 较陡        | 简单 ⭐⭐⭐⭐⭐         |
+| 推荐度   | ⭐⭐⭐⭐    | ⭐⭐⭐⭐⭐              |
 
 ### 最佳实践 ⭐⭐⭐⭐⭐
 
@@ -688,4 +688,3 @@ public boolean deleteByCondition(String username) {
 ## 📚 下一步
 
 完成数据库部分学习后，继续学习 [Spring生态](../04-Spring生态/)
-

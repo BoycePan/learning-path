@@ -21,13 +21,14 @@
 
 ```typescript
 export default defineConfig({
-  base: '/java-learning-path/', // 改为你的仓库名
+  base: "/java-learning-path/", // 改为你的仓库名
   title: "Java学习路线 2025",
   // ... 其他配置
-})
+});
 ```
 
 **示例**：
+
 - 如果仓库名是 `java-learning-path`，则 `base: '/java-learning-path/'`
 - 如果仓库名是 `你的用户名.github.io`，则**不需要**设置 base，或设置为 `base: '/'`
 
@@ -90,6 +91,7 @@ https://你的用户名.github.io/java-learning-path/
 ### `.vitepress/config.mts`
 
 VitePress 的配置文件，包含：
+
 - `base`: 网站的基础路径
 - `title`: 网站标题
 - `themeConfig`: 主题配置（导航、侧边栏等）
@@ -103,10 +105,10 @@ VitePress 的配置文件，包含：
 ```typescript
 // .vitepress/config.mts
 export default defineConfig({
-  base: '/java-learning-path/', // ⚠️ 注意斜杠
+  base: "/java-learning-path/", // ⚠️ 注意斜杠
   title: "Java学习路线 2025",
   // ...
-})
+});
 ```
 
 ### 2. 提交并推送
@@ -130,6 +132,7 @@ https://zhangsan.github.io/java-learning-path/
 **原因**：`base` 路径配置错误
 
 **解决方案**：
+
 1. 检查 `.vitepress/config.mts` 中的 `base` 配置
 2. 确保 `base` 与仓库名一致
 3. 注意前后都要有斜杠：`/仓库名/`
@@ -139,18 +142,20 @@ https://zhangsan.github.io/java-learning-path/
 **原因**：同样是 `base` 路径问题
 
 **解决方案**：
+
 ```typescript
 // ✅ 正确
-base: '/java-learning-path/'
+base: "/java-learning-path/";
 
 // ❌ 错误
-base: '/java-learning-path'   // 缺少尾部斜杠
-base: 'java-learning-path/'   // 缺少开头斜杠
+base: "/java-learning-path"; // 缺少尾部斜杠
+base: "java-learning-path/"; // 缺少开头斜杠
 ```
 
 ### Q3: Actions 构建失败
 
 **解决方案**：
+
 1. 检查 Actions 日志：仓库 → Actions → 点击失败的工作流
 2. 常见原因：
    - 依赖安装失败：检查 `pnpm-lock.yaml` 是否提交
@@ -217,9 +222,9 @@ Settings → Pages → Custom domain → 输入域名 → Save
 
 ```typescript
 export default defineConfig({
-  base: '/', // 使用自定义域名时设置为 /
+  base: "/", // 使用自定义域名时设置为 /
   // ...
-})
+});
 ```
 
 ## 📊 监控部署状态
@@ -255,4 +260,3 @@ export default defineConfig({
 - [GitHub Actions 文档](https://docs.github.com/actions)
 
 有问题？查看 GitHub Actions 的运行日志或提 Issue！
-

@@ -25,43 +25,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <modelVersion>4.0.0</modelVersion>
-    
+
     <!-- Spring Boot父项目 ⭐⭐⭐⭐⭐ -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.2.0</version>
     </parent>
-    
+
     <groupId>com.example</groupId>
     <artifactId>demo</artifactId>
     <version>1.0.0</version>
-    
+
     <properties>
         <java.version>17</java.version>
     </properties>
-    
+
     <dependencies>
         <!-- Web起步依赖 ⭐⭐⭐⭐⭐ -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        
+
         <!-- 测试 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        
+
         <!-- 开发工具（热部署）⭐⭐⭐⭐⭐ -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
         </dependency>
-        
+
         <!-- Lombok（简化代码）⭐⭐⭐⭐⭐ -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -69,7 +69,7 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
             <!-- Spring Boot打包插件 ⭐⭐⭐⭐⭐ -->
@@ -111,12 +111,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 public class HelloController {
-    
+
     @GetMapping("/hello")
     public String hello() {
         return "Hello, Spring Boot!";
     }
-    
+
     @GetMapping("/hello/{name}")
     public String helloName(@PathVariable String name) {
         return "Hello, " + name + "!";
@@ -147,7 +147,7 @@ spring:
       maximum-pool-size: 20
       minimum-idle: 5
       connection-timeout: 30000
-  
+
   # JPA配置 ⭐⭐⭐⭐
   jpa:
     show-sql: true
@@ -156,19 +156,19 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  
+
   # Redis配置 ⭐⭐⭐⭐⭐
   redis:
     host: localhost
     port: 6379
-    password: 
+    password:
     database: 0
     lettuce:
       pool:
         max-active: 8
         max-idle: 8
         min-idle: 0
-  
+
   # Jackson配置 ⭐⭐⭐⭐
   jackson:
     date-format: yyyy-MM-DD HH:mm:ss
@@ -216,10 +216,10 @@ app:
 public class AppConfig {
     @Value("${app.name}")
     private String appName;
-    
+
     @Value("${app.version}")
     private String version;
-    
+
     @Value("${server.port}")
     private int port;
 }
@@ -243,7 +243,7 @@ public class AppProperties {
 public class ConfigService {
     @Autowired
     private Environment environment;
-    
+
     public String getAppName() {
         return environment.getProperty("app.name");
     }
@@ -256,7 +256,7 @@ public class ConfigService {
 # application.yml（主配置）
 spring:
   profiles:
-    active: dev  # 激活dev环境
+    active: dev # 激活dev环境
 
 ---
 # application-dev.yml（开发环境）
@@ -298,19 +298,19 @@ public class Result<T> {
     private Integer code;
     private String message;
     private T data;
-    
+
     public static <T> Result<T> success() {
         return new Result<>(200, "成功", null);
     }
-    
+
     public static <T> Result<T> success(T data) {
         return new Result<>(200, "成功", data);
     }
-    
+
     public static <T> Result<T> error(String message) {
         return new Result<>(500, message, null);
     }
-    
+
     public static <T> Result<T> error(Integer code, String message) {
         return new Result<>(code, message, null);
     }
@@ -358,18 +358,18 @@ public interface UserService extends IService<User> {
 @Service
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
-    
+
     @Override
     public Page<User> searchUsers(int pageNum, int pageSize, String keyword) {
         Page<User> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-        
+
         if (StringUtils.isNotBlank(keyword)) {
             wrapper.like(User::getUsername, keyword)
                    .or()
                    .like(User::getEmail, keyword);
         }
-        
+
         return baseMapper.selectPage(page, wrapper);
     }
 }
@@ -381,10 +381,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 @RequestMapping("/api/users")
 @Slf4j
 public class UserController {
-    
+
     @Autowired
     private UserService userService;
-    
+
     /**
      * 查询所有用户 ⭐⭐⭐⭐⭐
      */
@@ -393,7 +393,7 @@ public class UserController {
         List<User> users = userService.list();
         return Result.success(users);
     }
-    
+
     /**
      * 根据ID查询 ⭐⭐⭐⭐⭐
      */
@@ -405,7 +405,7 @@ public class UserController {
         }
         return Result.success(user);
     }
-    
+
     /**
      * 分页查询 ⭐⭐⭐⭐⭐
      */
@@ -414,11 +414,11 @@ public class UserController {
             @RequestParam(defaultValue = "1") int pageNum,
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(required = false) String keyword) {
-        
+
         Page<User> page = userService.searchUsers(pageNum, pageSize, keyword);
         return Result.success(page);
     }
-    
+
     /**
      * 新增用户 ⭐⭐⭐⭐⭐
      */
@@ -427,7 +427,7 @@ public class UserController {
         boolean success = userService.save(user);
         return success ? Result.success("添加成功") : Result.error("添加失败");
     }
-    
+
     /**
      * 更新用户 ⭐⭐⭐⭐⭐
      */
@@ -436,7 +436,7 @@ public class UserController {
         boolean success = userService.updateById(user);
         return success ? Result.success("更新成功") : Result.error("更新失败");
     }
-    
+
     /**
      * 删除用户 ⭐⭐⭐⭐⭐
      */
@@ -445,7 +445,7 @@ public class UserController {
         boolean success = userService.removeById(id);
         return success ? Result.success("删除成功") : Result.error("删除失败");
     }
-    
+
     /**
      * 批量删除 ⭐⭐⭐⭐
      */
@@ -467,25 +467,25 @@ import javax.validation.constraints.*;
  */
 @Data
 public class UserDTO {
-    
+
     @NotBlank(message = "用户名不能为空")
     @Size(min = 3, max = 20, message = "用户名长度在3-20之间")
     private String username;
-    
+
     @NotBlank(message = "密码不能为空")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$", 
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$",
              message = "密码至少8位，包含大小写字母和数字")
     private String password;
-    
+
     @NotBlank(message = "邮箱不能为空")
     @Email(message = "邮箱格式不正确")
     private String email;
-    
+
     @NotNull(message = "年龄不能为空")
     @Min(value = 1, message = "年龄最小为1")
     @Max(value = 150, message = "年龄最大为150")
     private Integer age;
-    
+
     @NotNull(message = "手机号不能为空")
     @Pattern(regexp = "^1[3-9]\\d{9}$", message = "手机号格式不正确")
     private String phone;
@@ -497,7 +497,7 @@ public class UserDTO {
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-    
+
     @PostMapping
     public Result<String> add(@RequestBody @Validated UserDTO userDTO) {
         // 如果校验失败，会自动抛出异常
@@ -511,7 +511,7 @@ public class UserController {
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-    
+
     /**
      * 参数校验异常
      */
@@ -521,11 +521,11 @@ public class GlobalExceptionHandler {
         String message = bindingResult.getFieldErrors().stream()
             .map(FieldError::getDefaultMessage)
             .collect(Collectors.joining(", "));
-        
+
         log.error("参数校验失败：{}", message);
         return Result.error(400, message);
     }
-    
+
     /**
      * 业务异常
      */
@@ -534,7 +534,7 @@ public class GlobalExceptionHandler {
         log.error("业务异常：{}", e.getMessage());
         return Result.error(e.getCode(), e.getMessage());
     }
-    
+
     /**
      * 系统异常
      */
@@ -555,37 +555,37 @@ public class GlobalExceptionHandler {
 @Component
 @Slf4j
 public class AuthInterceptor implements HandlerInterceptor {
-    
+
     @Override
-    public boolean preHandle(HttpServletRequest request, 
-                            HttpServletResponse response, 
+    public boolean preHandle(HttpServletRequest request,
+                            HttpServletResponse response,
                             Object handler) throws Exception {
         String token = request.getHeader("Authorization");
-        
+
         if (StringUtils.isBlank(token)) {
             response.setStatus(401);
             response.getWriter().write("未登录");
             return false;
         }
-        
+
         // 验证token
         // ...
-        
+
         return true;
     }
-    
+
     @Override
-    public void postHandle(HttpServletRequest request, 
-                          HttpServletResponse response, 
-                          Object handler, 
+    public void postHandle(HttpServletRequest request,
+                          HttpServletResponse response,
+                          Object handler,
                           ModelAndView modelAndView) throws Exception {
         // 请求处理后，视图渲染前
     }
-    
+
     @Override
-    public void afterCompletion(HttpServletRequest request, 
-                               HttpServletResponse response, 
-                               Object handler, 
+    public void afterCompletion(HttpServletRequest request,
+                               HttpServletResponse response,
+                               Object handler,
                                Exception ex) throws Exception {
         // 整个请求完成后
     }
@@ -596,17 +596,17 @@ public class AuthInterceptor implements HandlerInterceptor {
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    
+
     @Autowired
     private AuthInterceptor authInterceptor;
-    
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
                 .addPathPatterns("/api/**")  // 拦截路径
                 .excludePathPatterns("/api/login", "/api/register");  // 排除路径
     }
-    
+
     /**
      * 跨域配置 ⭐⭐⭐⭐⭐
      */
@@ -626,18 +626,18 @@ public class WebConfig implements WebMvcConfigurer {
 @Component
 @WebFilter(urlPatterns = "/*", filterName = "logFilter")
 public class LogFilter implements Filter {
-    
+
     @Override
-    public void doFilter(ServletRequest request, 
-                        ServletResponse response, 
+    public void doFilter(ServletRequest request,
+                        ServletResponse response,
                         FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         System.out.println("请求URI：" + req.getRequestURI());
-        
+
         long start = System.currentTimeMillis();
         chain.doFilter(request, response);
         long end = System.currentTimeMillis();
-        
+
         System.out.println("耗时：" + (end - start) + "ms");
     }
 }
@@ -663,7 +663,7 @@ public class Application {
 @Component
 @Slf4j
 public class ScheduledTasks {
-    
+
     /**
      * 固定间隔执行（上次执行完后5秒）
      */
@@ -671,7 +671,7 @@ public class ScheduledTasks {
     public void task1() {
         log.info("固定间隔任务执行");
     }
-    
+
     /**
      * 固定频率执行（每5秒）
      */
@@ -679,7 +679,7 @@ public class ScheduledTasks {
     public void task2() {
         log.info("固定频率任务执行");
     }
-    
+
     /**
      * Cron表达式（每天凌晨1点） ⭐⭐⭐⭐⭐
      */
@@ -687,7 +687,7 @@ public class ScheduledTasks {
     public void task3() {
         log.info("每天凌晨1点执行");
     }
-    
+
     /**
      * 常用Cron表达式 ⭐⭐⭐⭐⭐
      * 0 0/5 * * * ?    每5分钟
@@ -704,12 +704,12 @@ public class ScheduledTasks {
 
 ### Spring Boot vs Spring ⭐⭐⭐⭐⭐
 
-| 特性 | Spring | Spring Boot |
-|------|--------|-------------|
-| 配置 | XML繁琐 | 自动配置 ⭐⭐⭐⭐⭐ |
-| 依赖 | 手动管理 | 起步依赖 ⭐⭐⭐⭐⭐ |
-| 服务器 | 外部Tomcat | 内嵌服务器 ⭐⭐⭐⭐⭐ |
-| 开发效率 | 较低 | 极高 ⭐⭐⭐⭐⭐ |
+| 特性     | Spring     | Spring Boot           |
+| -------- | ---------- | --------------------- |
+| 配置     | XML繁琐    | 自动配置 ⭐⭐⭐⭐⭐   |
+| 依赖     | 手动管理   | 起步依赖 ⭐⭐⭐⭐⭐   |
+| 服务器   | 外部Tomcat | 内嵌服务器 ⭐⭐⭐⭐⭐ |
+| 开发效率 | 较低       | 极高 ⭐⭐⭐⭐⭐       |
 
 ### 常用起步依赖 ⭐⭐⭐⭐⭐
 
@@ -756,4 +756,3 @@ public class ScheduledTasks {
 ## 📚 下一步
 
 学习完Spring Boot后，继续学习 [Spring Cloud](./SpringCloud.md)
-

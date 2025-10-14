@@ -321,33 +321,33 @@ public class JedisDemo {
         Jedis jedis = new Jedis("localhost", 6379);
         // 如果设置了密码
         // jedis.auth("password");
-        
+
         // 2. String操作 ⭐⭐⭐⭐⭐
         jedis.set("name", "张三");
         String name = jedis.get("name");
         System.out.println("name: " + name);
-        
+
         jedis.setex("code", 300, "123456");  // 5分钟后过期
-        
+
         // 3. Hash操作 ⭐⭐⭐⭐⭐
         jedis.hset("user:1", "name", "李四");
         jedis.hset("user:1", "age", "25");
         String userName = jedis.hget("user:1", "name");
         Map<String, String> user = jedis.hgetAll("user:1");
-        
+
         // 4. List操作 ⭐⭐⭐⭐⭐
         jedis.lpush("tasks", "任务1", "任务2");
         List<String> tasks = jedis.lrange("tasks", 0, -1);
-        
+
         // 5. Set操作 ⭐⭐⭐⭐⭐
         jedis.sadd("tags", "Java", "Redis", "MySQL");
         Set<String> tags = jedis.smembers("tags");
-        
+
         // 6. Sorted Set操作 ⭐⭐⭐⭐⭐
         jedis.zadd("rank", 100, "张三");
         jedis.zadd("rank", 95, "李四");
         List<String> topUsers = jedis.zrevrange("rank", 0, 9);  // 前10名
-        
+
         // 关闭连接
         jedis.close();
     }
@@ -358,7 +358,7 @@ public class JedisDemo {
  */
 public class JedisPoolDemo {
     private static JedisPool jedisPool;
-    
+
     static {
         // 连接池配置
         JedisPoolConfig config = new JedisPoolConfig();
@@ -366,15 +366,15 @@ public class JedisPoolDemo {
         config.setMaxIdle(10);    // 最大空闲连接
         config.setMinIdle(5);     // 最小空闲连接
         config.setTestOnBorrow(true);  // 获取连接时检测可用性
-        
+
         // 创建连接池
         jedisPool = new JedisPool(config, "localhost", 6379);
     }
-    
+
     public static Jedis getJedis() {
         return jedisPool.getResource();
     }
-    
+
     public static void main(String[] args) {
         // 从连接池获取连接
         try (Jedis jedis = getJedis()) {
@@ -398,94 +398,94 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 public class RedisService {
-    
+
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
-    
+
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
-    
+
     /**
      * String操作 ⭐⭐⭐⭐⭐
      */
     public void stringOperations() {
         // 设置值
         stringRedisTemplate.opsForValue().set("key", "value");
-        
+
         // 设置值和过期时间
         stringRedisTemplate.opsForValue().set("code", "123456", 5, TimeUnit.MINUTES);
-        
+
         // 获取值
         String value = stringRedisTemplate.opsForValue().get("key");
-        
+
         // 自增
         stringRedisTemplate.opsForValue().increment("counter");
         stringRedisTemplate.opsForValue().increment("counter", 10);
-        
+
         // 不存在才设置
         Boolean success = stringRedisTemplate.opsForValue().setIfAbsent("lock", "1");
     }
-    
+
     /**
      * Hash操作 ⭐⭐⭐⭐⭐
      */
     public void hashOperations() {
         // 设置字段
         stringRedisTemplate.opsForHash().put("user:1", "name", "张三");
-        
+
         // 获取字段
         Object name = stringRedisTemplate.opsForHash().get("user:1", "name");
-        
+
         // 获取所有
         Map<Object, Object> user = stringRedisTemplate.opsForHash().entries("user:1");
-        
+
         // 批量设置
         Map<String, String> map = new HashMap<>();
         map.put("name", "李四");
         map.put("age", "25");
         stringRedisTemplate.opsForHash().putAll("user:2", map);
     }
-    
+
     /**
      * List操作 ⭐⭐⭐⭐⭐
      */
     public void listOperations() {
         // 左侧插入
         stringRedisTemplate.opsForList().leftPush("tasks", "任务1");
-        
+
         // 右侧插入
         stringRedisTemplate.opsForList().rightPush("tasks", "任务2");
-        
+
         // 获取范围
         List<String> tasks = stringRedisTemplate.opsForList().range("tasks", 0, -1);
-        
+
         // 左侧弹出
         String task = stringRedisTemplate.opsForList().leftPop("tasks");
-        
+
         // 大小
         Long size = stringRedisTemplate.opsForList().size("tasks");
     }
-    
+
     /**
      * Set操作 ⭐⭐⭐⭐⭐
      */
     public void setOperations() {
         // 添加
         stringRedisTemplate.opsForSet().add("tags", "Java", "Redis", "MySQL");
-        
+
         // 获取所有
         Set<String> tags = stringRedisTemplate.opsForSet().members("tags");
-        
+
         // 判断存在
         Boolean exists = stringRedisTemplate.opsForSet().isMember("tags", "Java");
-        
+
         // 删除
         stringRedisTemplate.opsForSet().remove("tags", "MySQL");
-        
+
         // 大小
         Long size = stringRedisTemplate.opsForSet().size("tags");
     }
-    
+
     /**
      * Sorted Set操作 ⭐⭐⭐⭐⭐
      */
@@ -493,39 +493,39 @@ public class RedisService {
         // 添加
         stringRedisTemplate.opsForZSet().add("rank", "张三", 100);
         stringRedisTemplate.opsForZSet().add("rank", "李四", 95);
-        
+
         // 获取范围（降序）
         Set<String> top10 = stringRedisTemplate.opsForZSet()
             .reverseRange("rank", 0, 9);
-        
+
         // 带分数
-        Set<ZSetOperations.TypedTuple<String>> topWithScores = 
+        Set<ZSetOperations.TypedTuple<String>> topWithScores =
             stringRedisTemplate.opsForZSet()
                 .reverseRangeWithScores("rank", 0, 9);
-        
+
         // 获取排名
         Long rank = stringRedisTemplate.opsForZSet().reverseRank("rank", "张三");
-        
+
         // 增加分数
         stringRedisTemplate.opsForZSet().incrementScore("rank", "李四", 5);
-        
+
         // 获取分数
         Double score = stringRedisTemplate.opsForZSet().score("rank", "张三");
     }
-    
+
     /**
      * 通用操作 ⭐⭐⭐⭐⭐
      */
     public void commonOperations() {
         // 设置过期时间
         stringRedisTemplate.expire("key", 1, TimeUnit.HOURS);
-        
+
         // 获取剩余时间
         Long ttl = stringRedisTemplate.getExpire("key", TimeUnit.SECONDS);
-        
+
         // 删除
         stringRedisTemplate.delete("key");
-        
+
         // 判断存在
         Boolean exists = stringRedisTemplate.hasKey("key");
     }
@@ -544,40 +544,40 @@ public class RedisService {
 public class UserService {
     @Autowired
     private UserMapper userMapper;
-    
+
     @Autowired
     private StringRedisTemplate redisTemplate;
-    
+
     /**
      * 查询用户（带缓存） ⭐⭐⭐⭐⭐
      */
     public User getUserById(Long id) {
         String key = "user:" + id;
-        
+
         // 1. 先查缓存
         String userJson = redisTemplate.opsForValue().get(key);
         if (userJson != null) {
             return JSON.parseObject(userJson, User.class);
         }
-        
+
         // 2. 缓存未命中，查数据库
         User user = userMapper.selectById(id);
         if (user != null) {
             // 3. 写入缓存
-            redisTemplate.opsForValue().set(key, JSON.toJSONString(user), 
+            redisTemplate.opsForValue().set(key, JSON.toJSONString(user),
                 1, TimeUnit.HOURS);
         }
-        
+
         return user;
     }
-    
+
     /**
      * 更新用户（删除缓存） ⭐⭐⭐⭐⭐
      */
     public void updateUser(User user) {
         // 1. 更新数据库
         userMapper.updateById(user);
-        
+
         // 2. 删除缓存
         String key = "user:" + user.getId();
         redisTemplate.delete(key);
@@ -595,7 +595,7 @@ public class UserService {
 public class DistributedLockService {
     @Autowired
     private StringRedisTemplate redisTemplate;
-    
+
     /**
      * 获取锁 ⭐⭐⭐⭐⭐
      */
@@ -605,7 +605,7 @@ public class DistributedLockService {
             .setIfAbsent(lockKey, requestId, expireTime, TimeUnit.SECONDS);
         return Boolean.TRUE.equals(success);
     }
-    
+
     /**
      * 释放锁 ⭐⭐⭐⭐⭐
      */
@@ -613,23 +613,23 @@ public class DistributedLockService {
         // Lua脚本保证原子性
         String script = "if redis.call('get', KEYS[1]) == ARGV[1] then " +
                        "return redis.call('del', KEYS[1]) else return 0 end";
-        
+
         Long result = redisTemplate.execute(
             new DefaultRedisScript<>(script, Long.class),
             Collections.singletonList(lockKey),
             requestId
         );
-        
+
         return Long.valueOf(1).equals(result);
     }
-    
+
     /**
      * 使用示例
      */
     public void processOrder(Long orderId) {
         String lockKey = "order:lock:" + orderId;
         String requestId = UUID.randomUUID().toString();
-        
+
         try {
             // 获取锁
             if (tryLock(lockKey, requestId, 30)) {
@@ -656,7 +656,7 @@ public class DistributedLockService {
 public class RateLimiterService {
     @Autowired
     private StringRedisTemplate redisTemplate;
-    
+
     /**
      * 限流检查 ⭐⭐⭐⭐⭐
      * @param key 限流key
@@ -666,20 +666,20 @@ public class RateLimiterService {
     public boolean isAllowed(String key, int limit, int window) {
         long now = System.currentTimeMillis();
         long windowStart = now - window * 1000;
-        
+
         // 移除窗口外的记录
         redisTemplate.opsForZSet().removeRangeByScore(key, 0, windowStart);
-        
+
         // 统计窗口内的请求数
         Long count = redisTemplate.opsForZSet().zCard(key);
-        
+
         if (count < limit) {
             // 添加当前请求
             redisTemplate.opsForZSet().add(key, String.valueOf(now), now);
             redisTemplate.expire(key, window, TimeUnit.SECONDS);
             return true;
         }
-        
+
         return false;
     }
 }
@@ -695,33 +695,33 @@ public class RateLimiterService {
 public class LeaderboardService {
     @Autowired
     private StringRedisTemplate redisTemplate;
-    
+
     private static final String RANK_KEY = "game:rank";
-    
+
     /**
      * 更新分数 ⭐⭐⭐⭐⭐
      */
     public void updateScore(String userId, double score) {
         redisTemplate.opsForZSet().add(RANK_KEY, userId, score);
     }
-    
+
     /**
      * 获取前N名 ⭐⭐⭐⭐⭐
      */
     public List<RankItem> getTopN(int n) {
-        Set<ZSetOperations.TypedTuple<String>> tops = 
+        Set<ZSetOperations.TypedTuple<String>> tops =
             redisTemplate.opsForZSet()
                 .reverseRangeWithScores(RANK_KEY, 0, n - 1);
-        
+
         List<RankItem> result = new ArrayList<>();
         int rank = 1;
         for (ZSetOperations.TypedTuple<String> item : tops) {
-            result.add(new RankItem(rank++, item.getValue(), 
+            result.add(new RankItem(rank++, item.getValue(),
                 item.getScore()));
         }
         return result;
     }
-    
+
     /**
      * 获取用户排名 ⭐⭐⭐⭐⭐
      */
@@ -736,13 +736,13 @@ public class LeaderboardService {
 
 ### Redis vs MySQL ⭐⭐⭐⭐⭐
 
-| 特性 | Redis | MySQL |
-|------|-------|-------|
-| 存储 | 内存 | 磁盘 |
-| 速度 | 极快（10万QPS+） | 较快 |
-| 数据类型 | 5种数据结构 | 表格 |
-| 持久化 | RDB/AOF | 原生支持 |
-| 事务 | 简单事务 | 完整事务 |
+| 特性     | Redis                | MySQL      |
+| -------- | -------------------- | ---------- |
+| 存储     | 内存                 | 磁盘       |
+| 速度     | 极快（10万QPS+）     | 较快       |
+| 数据类型 | 5种数据结构          | 表格       |
+| 持久化   | RDB/AOF              | 原生支持   |
+| 事务     | 简单事务             | 完整事务   |
 | 使用场景 | 缓存、计数器、排行榜 | 持久化存储 |
 
 ### 缓存策略 ⭐⭐⭐⭐⭐
@@ -782,4 +782,3 @@ public class LeaderboardService {
 ## 📚 下一步
 
 学习完Redis后，继续学习 [MyBatis](./MyBatis.md)
-

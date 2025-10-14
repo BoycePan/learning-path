@@ -39,18 +39,18 @@ public class ByteStreamDemo {
         // 使用try-with-resources自动关闭流
         try (FileInputStream fis = new FileInputStream(src);
              FileOutputStream fos = new FileOutputStream(dest)) {
-            
+
             byte[] buffer = new byte[1024];  // 缓冲区
             int len;
-            
+
             while ((len = fis.read(buffer)) != -1) {
                 fos.write(buffer, 0, len);
             }
-            
+
             System.out.println("文件复制成功！");
         }
     }
-    
+
     /**
      * 读取文件内容
      */
@@ -62,7 +62,7 @@ public class ByteStreamDemo {
             }
         }
     }
-    
+
     /**
      * 写入文件
      */
@@ -72,7 +72,7 @@ public class ByteStreamDemo {
             System.out.println("写入成功！");
         }
     }
-    
+
     public static void main(String[] args) {
         try {
             writeFile("test.txt", "Hello, Java IO!");
@@ -99,18 +99,18 @@ public class BufferedStreamDemo {
                 new FileInputStream(src));
              BufferedOutputStream bos = new BufferedOutputStream(
                 new FileOutputStream(dest))) {
-            
+
             byte[] buffer = new byte[8192];  // 8KB缓冲区
             int len;
-            
+
             while ((len = bis.read(buffer)) != -1) {
                 bos.write(buffer, 0, len);
             }
-            
+
             System.out.println("高效复制完成！");
         }
     }
-    
+
     public static void main(String[] args) {
         try {
             long start = System.currentTimeMillis();
@@ -143,7 +143,7 @@ public class CharStreamDemo {
             }
         }
     }
-    
+
     /**
      * 写入文本文件
      */
@@ -153,7 +153,7 @@ public class CharStreamDemo {
             System.out.println("文本写入成功！");
         }
     }
-    
+
     /**
      * 追加内容
      */
@@ -162,7 +162,7 @@ public class CharStreamDemo {
             fw.write(content);
         }
     }
-    
+
     public static void main(String[] args) {
         try {
             writeTextFile("demo.txt", "第一行内容\n");
@@ -188,14 +188,14 @@ public class BufferedCharStreamDemo {
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             int lineNumber = 1;
-            
+
             while ((line = br.readLine()) != null) {
                 System.out.println(lineNumber + ": " + line);
                 lineNumber++;
             }
         }
     }
-    
+
     /**
      * 按行写入文件 ⭐⭐⭐⭐⭐
      */
@@ -208,14 +208,14 @@ public class BufferedCharStreamDemo {
             System.out.println("写入完成！");
         }
     }
-    
+
     /**
      * 文本文件复制
      */
     public static void copyTextFile(String src, String dest) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(src));
              BufferedWriter bw = new BufferedWriter(new FileWriter(dest))) {
-            
+
             String line;
             while ((line = br.readLine()) != null) {
                 bw.write(line);
@@ -223,12 +223,12 @@ public class BufferedCharStreamDemo {
             }
         }
     }
-    
+
     public static void main(String[] args) {
         try {
             String[] lines = {"Java IO学习", "BufferedReader很好用", "推荐使用"};
             writeFileByLine("notes.txt", lines);
-            
+
             System.out.println("文件内容：");
             readFileByLine("notes.txt");
         } catch (IOException e) {
@@ -250,20 +250,20 @@ import java.io.*;
  */
 class Student implements Serializable {
     private static final long serialVersionUID = 1L;  // 版本号
-    
+
     private String name;
     private int age;
     private transient String password;  // transient: 不序列化
-    
+
     public Student(String name, int age, String password) {
         this.name = name;
         this.age = age;
         this.password = password;
     }
-    
+
     @Override
     public String toString() {
-        return "Student{name='" + name + "', age=" + age + 
+        return "Student{name='" + name + "', age=" + age +
                ", password='" + password + "'}";
     }
 }
@@ -279,29 +279,29 @@ public class SerializationDemo {
             System.out.println("对象序列化成功！");
         }
     }
-    
+
     /**
      * 反序列化对象 ⭐⭐⭐⭐⭐
      */
-    public static Object deserializeObject(String fileName) 
+    public static Object deserializeObject(String fileName)
             throws IOException, ClassNotFoundException {
         try (ObjectInputStream ois = new ObjectInputStream(
                 new FileInputStream(fileName))) {
             return ois.readObject();
         }
     }
-    
+
     public static void main(String[] args) {
         try {
             // 序列化
             Student student = new Student("张三", 20, "123456");
             System.out.println("原始对象：" + student);
             serializeObject("student.dat", student);
-            
+
             // 反序列化
             Student loaded = (Student) deserializeObject("student.dat");
             System.out.println("反序列化对象：" + loaded);
-            
+
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -325,45 +325,45 @@ public class FilesDemo {
             // 1. 读取所有行（小文件） ⭐⭐⭐⭐⭐
             List<String> lines = Files.readAllLines(Paths.get("demo.txt"));
             lines.forEach(System.out::println);
-            
+
             // 2. 写入文件（推荐） ⭐⭐⭐⭐⭐
             String content = "使用Files类写入文件\n非常简洁！";
             Files.write(Paths.get("output.txt"), content.getBytes());
-            
+
             // 3. 复制文件 ⭐⭐⭐⭐⭐
             Files.copy(
-                Paths.get("source.txt"), 
+                Paths.get("source.txt"),
                 Paths.get("target.txt"),
                 StandardCopyOption.REPLACE_EXISTING  // 替换已存在文件
             );
-            
+
             // 4. 移动文件 ⭐⭐⭐⭐
             Files.move(
-                Paths.get("old.txt"), 
+                Paths.get("old.txt"),
                 Paths.get("new.txt"),
                 StandardCopyOption.REPLACE_EXISTING
             );
-            
+
             // 5. 删除文件 ⭐⭐⭐⭐
             Files.deleteIfExists(Paths.get("temp.txt"));
-            
+
             // 6. 创建目录 ⭐⭐⭐⭐⭐
             Files.createDirectories(Paths.get("data/backup/2024"));
-            
+
             // 7. 检查文件 ⭐⭐⭐⭐⭐
             Path path = Paths.get("demo.txt");
             System.out.println("文件是否存在：" + Files.exists(path));
             System.out.println("是否是文件：" + Files.isRegularFile(path));
             System.out.println("是否是目录：" + Files.isDirectory(path));
             System.out.println("文件大小：" + Files.size(path) + " bytes");
-            
+
             // 8. 遍历目录（推荐） ⭐⭐⭐⭐⭐
             System.out.println("\n当前目录下的文件：");
             try (Stream<Path> paths = Files.list(Paths.get("."))) {
                 paths.filter(Files::isRegularFile)
                      .forEach(System.out::println);
             }
-            
+
             // 9. 递归遍历目录树 ⭐⭐⭐⭐
             System.out.println("\n递归遍历：");
             try (Stream<Path> paths = Files.walk(Paths.get("."))) {
@@ -371,13 +371,13 @@ public class FilesDemo {
                      .filter(p -> p.toString().endsWith(".java"))
                      .forEach(System.out::println);
             }
-            
+
             // 10. 读取大文件（逐行处理） ⭐⭐⭐⭐⭐
             try (Stream<String> stream = Files.lines(Paths.get("large_file.txt"))) {
                 stream.filter(line -> line.contains("关键词"))
                       .forEach(System.out::println);
             }
-            
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -402,37 +402,37 @@ public class NIODemo {
     public static void readFileNIO(String fileName) throws IOException {
         try (FileChannel channel = FileChannel.open(
                 Paths.get(fileName), StandardOpenOption.READ)) {
-            
+
             ByteBuffer buffer = ByteBuffer.allocate(1024);
-            
+
             while (channel.read(buffer) > 0) {
                 buffer.flip();  // 切换到读模式
-                
+
                 while (buffer.hasRemaining()) {
                     System.out.print((char) buffer.get());
                 }
-                
+
                 buffer.clear();  // 清空缓冲区
             }
         }
     }
-    
+
     /**
      * 使用NIO写入文件 ⭐⭐⭐⭐
      */
     public static void writeFileNIO(String fileName, String content) throws IOException {
         try (FileChannel channel = FileChannel.open(
-                Paths.get(fileName), 
-                StandardOpenOption.WRITE, 
+                Paths.get(fileName),
+                StandardOpenOption.WRITE,
                 StandardOpenOption.CREATE)) {
-            
+
             ByteBuffer buffer = ByteBuffer.wrap(content.getBytes());
             channel.write(buffer);
-            
+
             System.out.println("NIO写入成功！");
         }
     }
-    
+
     /**
      * NIO文件复制（高效） ⭐⭐⭐⭐⭐
      */
@@ -440,17 +440,17 @@ public class NIODemo {
         try (FileChannel srcChannel = FileChannel.open(
                 Paths.get(src), StandardOpenOption.READ);
              FileChannel destChannel = FileChannel.open(
-                Paths.get(dest), 
-                StandardOpenOption.WRITE, 
+                Paths.get(dest),
+                StandardOpenOption.WRITE,
                 StandardOpenOption.CREATE)) {
-            
+
             // 直接传输（零拷贝）
             srcChannel.transferTo(0, srcChannel.size(), destChannel);
-            
+
             System.out.println("NIO高效复制完成！");
         }
     }
-    
+
     public static void main(String[] args) {
         try {
             writeFileNIO("nio_test.txt", "NIO测试内容");
@@ -479,46 +479,46 @@ public class FileUtils {
     public static String readFileAsString(String fileName) throws IOException {
         return new String(Files.readAllBytes(Paths.get(fileName)));
     }
-    
+
     /**
      * 写入字符串到文件
      */
-    public static void writeStringToFile(String fileName, String content) 
+    public static void writeStringToFile(String fileName, String content)
             throws IOException {
         Files.write(Paths.get(fileName), content.getBytes());
     }
-    
+
     /**
      * 读取文件为列表
      */
     public static List<String> readFileAsList(String fileName) throws IOException {
         return Files.readAllLines(Paths.get(fileName));
     }
-    
+
     /**
      * 追加内容到文件
      */
-    public static void appendToFile(String fileName, String content) 
+    public static void appendToFile(String fileName, String content)
             throws IOException {
         Files.write(
-            Paths.get(fileName), 
-            content.getBytes(), 
+            Paths.get(fileName),
+            content.getBytes(),
             StandardOpenOption.CREATE,
             StandardOpenOption.APPEND
         );
     }
-    
+
     /**
      * 复制文件
      */
     public static void copyFile(String src, String dest) throws IOException {
         Files.copy(
-            Paths.get(src), 
-            Paths.get(dest), 
+            Paths.get(src),
+            Paths.get(dest),
             StandardCopyOption.REPLACE_EXISTING
         );
     }
-    
+
     /**
      * 删除文件或目录
      */
@@ -529,7 +529,7 @@ public class FileUtils {
             return false;
         }
     }
-    
+
     /**
      * 获取文件扩展名
      */
@@ -537,7 +537,7 @@ public class FileUtils {
         int lastDot = fileName.lastIndexOf('.');
         return lastDot > 0 ? fileName.substring(lastDot + 1) : "";
     }
-    
+
     /**
      * 获取文件大小（格式化）
      */
@@ -548,7 +548,7 @@ public class FileUtils {
         if (bytes < 1024 * 1024 * 1024) return (bytes / 1024 / 1024) + " MB";
         return (bytes / 1024 / 1024 / 1024) + " GB";
     }
-    
+
     /**
      * 列出目录下所有文件
      */
@@ -567,14 +567,14 @@ public class FileUtils {
 
 ### IO流选择指南 ⭐⭐⭐⭐⭐
 
-| 场景 | 推荐方案 |
-|------|---------|
-| 读写文本文件 | **Files类**（首选） |
-| 读写二进制文件 | **BufferedInputStream/OutputStream** |
-| 对象序列化 | **ObjectInputStream/OutputStream** |
-| 大文件处理 | **NIO Channel+Buffer** |
-| 按行读取 | **Files.lines()** 或 **BufferedReader** |
-| 文件复制 | **Files.copy()** |
+| 场景           | 推荐方案                                |
+| -------------- | --------------------------------------- |
+| 读写文本文件   | **Files类**（首选）                     |
+| 读写二进制文件 | **BufferedInputStream/OutputStream**    |
+| 对象序列化     | **ObjectInputStream/OutputStream**      |
+| 大文件处理     | **NIO Channel+Buffer**                  |
+| 按行读取       | **Files.lines()** 或 **BufferedReader** |
+| 文件复制       | **Files.copy()**                        |
 
 ### 性能对比 ⭐⭐⭐⭐⭐
 
@@ -633,4 +633,3 @@ while ((len = fis.read(buffer)) != -1) { ... }
 ## 📚 下一步
 
 学习完IO与NIO后，继续学习 [JVM原理](./JVM原理.md)
-

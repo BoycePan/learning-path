@@ -72,12 +72,12 @@ public class UserRepository {
 @Configuration  // 配置类
 @ComponentScan("com.example")  // 扫描包
 public class AppConfig {
-    
+
     @Bean  // 声明Bean
     public UserService userService() {
         return new UserServiceImpl();
     }
-    
+
     @Bean
     public UserDao userDao() {
         return new UserDaoImpl();
@@ -94,7 +94,7 @@ public class AppConfig {
 @Service
 public class UserService {
     private final UserDao userDao;
-    
+
     // Spring 4.3+，单个构造器可省略@Autowired
     public UserService(UserDao userDao) {
         this.userDao = userDao;
@@ -107,7 +107,7 @@ public class UserService {
 @Service
 public class UserService {
     private UserDao userDao;
-    
+
     @Autowired
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
@@ -131,7 +131,7 @@ public class UserService {
     @Autowired
     @Qualifier("userDaoImpl")  // 指定Bean名称
     private UserDao userDao;
-    
+
     // 或使用@Resource
     @Resource(name = "userDaoImpl")
     private UserDao userDao2;
@@ -183,12 +183,12 @@ public class SessionBean {
  */
 @Component
 public class LifecycleBean {
-    
+
     @PostConstruct  // 初始化回调 ⭐⭐⭐⭐⭐
     public void init() {
         System.out.println("Bean初始化");
     }
-    
+
     @PreDestroy  // 销毁回调 ⭐⭐⭐⭐
     public void destroy() {
         System.out.println("Bean销毁");
@@ -226,13 +226,13 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class LogAspect {
-    
+
     /**
      * 切入点定义 ⭐⭐⭐⭐⭐
      */
     @Pointcut("execution(* com.example.service.*.*(..))")
     public void servicePointcut() {}
-    
+
     /**
      * 前置通知 ⭐⭐⭐⭐⭐
      */
@@ -243,7 +243,7 @@ public class LogAspect {
         System.out.println("方法执行前：" + methodName);
         System.out.println("参数：" + Arrays.toString(args));
     }
-    
+
     /**
      * 后置通知（无论是否异常都执行） ⭐⭐⭐⭐
      */
@@ -251,7 +251,7 @@ public class LogAspect {
     public void after(JoinPoint joinPoint) {
         System.out.println("方法执行后：" + joinPoint.getSignature().getName());
     }
-    
+
     /**
      * 返回通知（方法正常返回后执行） ⭐⭐⭐⭐⭐
      */
@@ -259,7 +259,7 @@ public class LogAspect {
     public void afterReturning(JoinPoint joinPoint, Object result) {
         System.out.println("方法返回值：" + result);
     }
-    
+
     /**
      * 异常通知 ⭐⭐⭐⭐
      */
@@ -267,24 +267,24 @@ public class LogAspect {
     public void afterThrowing(JoinPoint joinPoint, Exception ex) {
         System.out.println("方法异常：" + ex.getMessage());
     }
-    
+
     /**
      * 环绕通知（最强大） ⭐⭐⭐⭐⭐
      */
     @Around("servicePointcut()")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         String methodName = joinPoint.getSignature().getName();
-        
+
         System.out.println("环绕前：" + methodName);
         long start = System.currentTimeMillis();
-        
+
         try {
             // 执行目标方法
             Object result = joinPoint.proceed();
-            
+
             long end = System.currentTimeMillis();
             System.out.println("环绕后：" + methodName + "，耗时：" + (end - start) + "ms");
-            
+
             return result;
         } catch (Exception e) {
             System.out.println("环绕异常：" + e.getMessage());
@@ -299,23 +299,23 @@ public class LogAspect {
 @Aspect
 @Component
 public class PointcutExamples {
-    
+
     // 1. 所有public方法
     @Pointcut("execution(public * *(..))")
     public void publicMethods() {}
-    
+
     // 2. service包下所有方法
     @Pointcut("execution(* com.example.service.*.*(..))")
     public void serviceMethods() {}
-    
+
     // 3. 特定类的所有方法
     @Pointcut("execution(* com.example.service.UserService.*(..))")
     public void userServiceMethods() {}
-    
+
     // 4. 带注解的方法
     @Pointcut("@annotation(com.example.annotation.Log)")
     public void logMethods() {}
-    
+
     // 5. 组合切入点
     @Pointcut("publicMethods() && serviceMethods()")
     public void publicServiceMethods() {}
@@ -331,16 +331,16 @@ public class PointcutExamples {
 @Aspect
 @Component
 public class PerformanceAspect {
-    
+
     @Around("execution(* com.example.service.*.*(..))")
     public Object monitor(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
         Object result = joinPoint.proceed();
         long end = System.currentTimeMillis();
-        
+
         String methodName = joinPoint.getSignature().getName();
         System.out.println(methodName + " 执行耗时：" + (end - start) + "ms");
-        
+
         return result;
     }
 }
@@ -351,8 +351,8 @@ public class PerformanceAspect {
 @Aspect
 @Component
 public class ExceptionAspect {
-    
-    @AfterThrowing(pointcut = "execution(* com.example.controller.*.*(..))", 
+
+    @AfterThrowing(pointcut = "execution(* com.example.controller.*.*(..))",
                    throwing = "ex")
     public void handleException(JoinPoint joinPoint, Exception ex) {
         String methodName = joinPoint.getSignature().getName();
@@ -367,7 +367,7 @@ public class ExceptionAspect {
 @Aspect
 @Component
 public class AuthAspect {
-    
+
     @Before("@annotation(requiresAuth)")
     public void checkAuth(JoinPoint joinPoint, RequiresAuth requiresAuth) {
         String role = requiresAuth.value();
@@ -400,20 +400,20 @@ public class UserService {
 @Component
 @Slf4j
 public class LogAspect {
-    
+
     @Around("@annotation(log)")
     public Object log(ProceedingJoinPoint joinPoint, Log log) throws Throwable {
         String methodName = joinPoint.getSignature().getName();
         Object[] args = joinPoint.getArgs();
-        
+
         log.info("方法：{}，参数：{}", methodName, args);
-        
+
         long start = System.currentTimeMillis();
         Object result = joinPoint.proceed();
         long end = System.currentTimeMillis();
-        
+
         log.info("方法：{}，返回：{}，耗时：{}ms", methodName, result, (end - start));
-        
+
         return result;
     }
 }
@@ -483,13 +483,13 @@ public class LogAspect {
  */
 @Service
 public class UserService {
-    
+
     @Autowired
     private UserMapper userMapper;
-    
+
     @Autowired
     private AccountMapper accountMapper;
-    
+
     /**
      * 基本事务 ⭐⭐⭐⭐⭐
      */
@@ -498,7 +498,7 @@ public class UserService {
         userMapper.insert(user);
         // 如果这里抛出异常，上面的插入会回滚
     }
-    
+
     /**
      * 事务属性 ⭐⭐⭐⭐⭐
      */
@@ -512,30 +512,30 @@ public class UserService {
     public void updateUser(User user) {
         userMapper.updateById(user);
     }
-    
+
     /**
      * 事务传播行为 ⭐⭐⭐⭐⭐
      */
     // REQUIRED：如果有事务就加入，没有就新建（默认）
     @Transactional(propagation = Propagation.REQUIRED)
     public void method1() {}
-    
+
     // REQUIRES_NEW：总是新建事务
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void method2() {}
-    
+
     // SUPPORTS：如果有事务就加入，没有就以非事务运行
     @Transactional(propagation = Propagation.SUPPORTS)
     public void method3() {}
-    
+
     // NOT_SUPPORTED：以非事务方式运行，如果有事务就挂起
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void method4() {}
-    
+
     // NESTED：嵌套事务
     @Transactional(propagation = Propagation.NESTED)
     public void method5() {}
-    
+
     /**
      * 转账示例 ⭐⭐⭐⭐⭐
      */
@@ -543,15 +543,15 @@ public class UserService {
     public void transfer(Long fromId, Long toId, BigDecimal amount) {
         // 扣款
         accountMapper.deduct(fromId, amount);
-        
+
         // 模拟异常
         if (amount.compareTo(new BigDecimal("1000")) > 0) {
             throw new RuntimeException("金额过大");
         }
-        
+
         // 加款
         accountMapper.add(toId, amount);
-        
+
         // 如果发生异常，两个操作都会回滚
     }
 }
@@ -561,10 +561,10 @@ public class UserService {
  */
 @Service
 public class ProgrammaticTransactionService {
-    
+
     @Autowired
     private TransactionTemplate transactionTemplate;
-    
+
     public void executeInTransaction() {
         transactionTemplate.execute(status -> {
             try {
@@ -610,16 +610,16 @@ public class UserService {
     public void methodA() {
         methodB();  // methodB的事务不会生效
     }
-    
+
     @Transactional
     public void methodB() {
         // ...
     }
-    
+
     // ✅ 解决方案：注入自己
     @Autowired
     private UserService self;
-    
+
     public void methodA2() {
         self.methodB();  // 现在事务会生效
     }
@@ -660,4 +660,3 @@ public class A {
 ## 📚 下一步
 
 学习完Spring核心后，继续学习 [Spring Boot](./SpringBoot.md)
-

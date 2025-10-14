@@ -34,19 +34,19 @@ public class JVMMemoryDemo {
     // 1. 方法区（元空间）- 存储类信息、常量、静态变量 ⭐⭐⭐⭐⭐
     private static int staticVar = 100;  // 静态变量
     private static final String CONSTANT = "常量";  // 常量
-    
+
     // 2. 堆（Heap）- 存储对象实例 ⭐⭐⭐⭐⭐
     private String name;  // 实例变量，对象在堆中
-    
+
     public void method() {
         // 3. 虚拟机栈 - 存储局部变量、方法调用 ⭐⭐⭐⭐⭐
         int localVar = 10;  // 局部变量，在栈中
         String str = "hello";  // 引用在栈，对象在堆
-        
+
         // 4. 程序计数器 - 记录当前线程执行的字节码行号
         // 5. 本地方法栈 - native方法使用
     }
-    
+
     public static void main(String[] args) {
         // 创建对象，在堆中分配内存
         JVMMemoryDemo demo = new JVMMemoryDemo();
@@ -74,14 +74,14 @@ public class HeapDemo {
     public static void main(String[] args) {
         // 新对象在Eden区分配
         byte[] arr1 = new byte[1024 * 1024];  // 1MB
-        
+
         // Minor GC后，存活对象移到Survivor区
         byte[] arr2 = new byte[1024 * 1024];
-        
+
         // 经过多次GC后，存活对象进入老年代
         // 或者大对象直接进入老年代
         byte[] bigArray = new byte[5 * 1024 * 1024];  // 5MB
-        
+
         // JVM参数示例：
         // -Xms512m    初始堆大小
         // -Xmx1024m   最大堆大小
@@ -101,7 +101,7 @@ public class HeapDemo {
  */
 public class GCAlgorithmDemo {
     private Object instance;
-    
+
     public static void main(String[] args) {
         // 可达性分析：从GC Roots开始遍历
         // GC Roots包括：
@@ -109,19 +109,19 @@ public class GCAlgorithmDemo {
         // 2. 方法区中的静态变量引用
         // 3. 方法区中的常量引用
         // 4. 本地方法栈中的引用
-        
+
         GCAlgorithmDemo obj1 = new GCAlgorithmDemo();  // 可达
         GCAlgorithmDemo obj2 = new GCAlgorithmDemo();  // 可达
-        
+
         obj1.instance = obj2;
         obj2.instance = obj1;
-        
+
         obj1 = null;
         obj2 = null;
-        
+
         // 此时obj1和obj2不可达，会被回收
         // 引用计数法会出现循环引用问题，但可达性分析不会
-        
+
         System.gc();  // 建议JVM进行垃圾回收
     }
 }
@@ -140,19 +140,19 @@ public class ReferenceDemo {
         // 1. 强引用（Strong Reference）- 永不回收 ⭐⭐⭐⭐⭐
         String strongRef = new String("强引用");
         // 只要强引用存在，永不回收
-        
+
         // 2. 软引用（Soft Reference）- 内存不足时回收 ⭐⭐⭐⭐
         SoftReference<String> softRef = new SoftReference<>(new String("软引用"));
         System.out.println("软引用：" + softRef.get());
         // 适用场景：缓存
-        
+
         // 3. 弱引用（Weak Reference）- GC时回收 ⭐⭐⭐⭐
         WeakReference<String> weakRef = new WeakReference<>(new String("弱引用"));
         System.out.println("弱引用：" + weakRef.get());
         System.gc();
         System.out.println("GC后：" + weakRef.get());  // null
         // 适用场景：WeakHashMap
-        
+
         // 4. 虚引用（Phantom Reference）- 无法通过引用获取对象 ⭐⭐⭐
         ReferenceQueue<String> queue = new ReferenceQueue<>();
         PhantomReference<String> phantomRef = new PhantomReference<>(
@@ -169,36 +169,36 @@ public class ReferenceDemo {
 ```java
 /**
  * 常见垃圾回收器
- * 
+ *
  * 1. Serial GC - 单线程 ⭐⭐⭐
  *    -XX:+UseSerialGC
- * 
+ *
  * 2. Parallel GC - 多线程，吞吐量优先 ⭐⭐⭐⭐
  *    -XX:+UseParallelGC
- * 
+ *
  * 3. CMS GC - 并发标记清除，停顿时间短 ⭐⭐⭐⭐
  *    -XX:+UseConcMarkSweepGC
- * 
+ *
  * 4. G1 GC - 分代收集，可预测停顿 ⭐⭐⭐⭐⭐ (Java 9+默认)
  *    -XX:+UseG1GC
- * 
+ *
  * 5. ZGC - 低延迟（Java 11+） ⭐⭐⭐⭐⭐
  *    -XX:+UseZGC
- * 
+ *
  * 6. Shenandoah GC - 低停顿时间 ⭐⭐⭐⭐
  *    -XX:+UseShenandoahGC
  */
 public class GarbageCollectorDemo {
     public static void main(String[] args) {
         // 查看当前使用的垃圾回收器
-        System.out.println("垃圾回收器：" + 
+        System.out.println("垃圾回收器：" +
             System.getProperty("java.vm.name"));
-        
+
         // GC日志参数
         // -XX:+PrintGCDetails      打印GC详情
         // -XX:+PrintGCDateStamps   打印GC时间戳
         // -Xloggc:gc.log          GC日志文件
-        
+
         // 触发GC
         System.gc();  // Full GC
     }
@@ -211,7 +211,7 @@ public class GarbageCollectorDemo {
 
 ```
 类加载过程：
-加载（Loading） → 验证（Verification） → 准备（Preparation） 
+加载（Loading） → 验证（Verification） → 准备（Preparation）
 → 解析（Resolution） → 初始化（Initialization）
 ```
 
@@ -222,23 +222,23 @@ public class GarbageCollectorDemo {
 public class ClassLoadingDemo {
     // 1. 准备阶段：分配内存，设置默认值
     private static int value = 100;  // 准备阶段value=0，初始化阶段value=100
-    
+
     // 2. 初始化阶段：执行静态代码块和静态变量赋值
     static {
         System.out.println("静态代码块执行");
         value = 200;
     }
-    
+
     public static void main(String[] args) {
         System.out.println("value = " + value);  // 200
-        
+
         // 类的主动引用（会触发初始化）：
         // 1. new对象
         // 2. 访问静态变量或方法
         // 3. 反射调用
         // 4. 初始化子类
         // 5. main方法所在类
-        
+
         // 类的被动引用（不会触发初始化）：
         // 1. 引用静态常量
         // 2. 通过数组定义引用
@@ -257,21 +257,21 @@ public class ClassLoaderDemo {
     public static void main(String[] args) {
         // 1. 启动类加载器（Bootstrap ClassLoader）
         //    加载Java核心库（rt.jar）
-        System.out.println("String的类加载器：" + 
+        System.out.println("String的类加载器：" +
             String.class.getClassLoader());  // null（由C++实现）
-        
+
         // 2. 扩展类加载器（Extension ClassLoader）
         //    加载ext目录下的类
-        
+
         // 3. 应用类加载器（Application ClassLoader）⭐⭐⭐⭐⭐
         //    加载classpath下的类
-        System.out.println("当前类的类加载器：" + 
+        System.out.println("当前类的类加载器：" +
             ClassLoaderDemo.class.getClassLoader());
-        
+
         // 双亲委派模型 ⭐⭐⭐⭐⭐
         // 类加载器收到加载请求时，先委托给父加载器
         // 父加载器无法加载时，才自己加载
-        
+
         // 获取类加载器
         ClassLoader classLoader = ClassLoaderDemo.class.getClassLoader();
         System.out.println("类加载器：" + classLoader);
@@ -328,33 +328,33 @@ public class ClassLoaderDemo {
 public class JVMTuningDemo {
     public static void main(String[] args) {
         // 启动参数示例：
-        // java -Xms2g -Xmx4g -Xmn1g -XX:+UseG1GC 
-        //      -XX:MaxGCPauseMillis=200 
-        //      -XX:+PrintGCDetails 
-        //      -Xloggc:gc.log 
+        // java -Xms2g -Xmx4g -Xmn1g -XX:+UseG1GC
+        //      -XX:MaxGCPauseMillis=200
+        //      -XX:+PrintGCDetails
+        //      -Xloggc:gc.log
         //      JVMTuningDemo
-        
+
         // 1. 查看运行时内存信息 ⭐⭐⭐⭐⭐
         Runtime runtime = Runtime.getRuntime();
         long maxMemory = runtime.maxMemory() / 1024 / 1024;
         long totalMemory = runtime.totalMemory() / 1024 / 1024;
         long freeMemory = runtime.freeMemory() / 1024 / 1024;
-        
+
         System.out.println("最大内存：" + maxMemory + "MB");
         System.out.println("总内存：" + totalMemory + "MB");
         System.out.println("空闲内存：" + freeMemory + "MB");
         System.out.println("已用内存：" + (totalMemory - freeMemory) + "MB");
-        
+
         // 2. 模拟内存占用
         byte[] data = new byte[10 * 1024 * 1024];  // 10MB
-        
+
         System.out.println("\n分配10MB后：");
         System.out.println("空闲内存：" + runtime.freeMemory() / 1024 / 1024 + "MB");
-        
+
         // 3. 触发GC
         data = null;
         System.gc();
-        
+
         System.out.println("\nGC后：");
         System.out.println("空闲内存：" + runtime.freeMemory() / 1024 / 1024 + "MB");
     }
@@ -374,46 +374,46 @@ import java.util.*;
 public class MemoryLeakDemo {
     // 1. 静态集合持有对象引用 ⭐⭐⭐⭐⭐
     private static List<Object> list = new ArrayList<>();
-    
+
     public void leak1() {
         // 对象不断添加到静态集合，永不释放
         list.add(new byte[1024 * 1024]);  // 1MB
     }
-    
+
     // 2. 未关闭的资源 ⭐⭐⭐⭐⭐
     public void leak2() {
         // 数据库连接、文件流等未关闭
         // 应使用try-with-resources
     }
-    
+
     // 3. 监听器未移除 ⭐⭐⭐⭐
     public void leak3() {
         // 添加监听器后未移除
     }
-    
+
     // 4. ThreadLocal未清理 ⭐⭐⭐⭐⭐
     private static ThreadLocal<List<String>> threadLocal = new ThreadLocal<>();
-    
+
     public void leak4() {
         threadLocal.set(new ArrayList<>());
         // 使用线程池时，ThreadLocal未清理会导致内存泄漏
         // 应在finally中调用 threadLocal.remove();
     }
-    
+
     // 5. 内部类持有外部类引用 ⭐⭐⭐⭐
     class InnerClass {
         // 非静态内部类持有外部类引用
         // 如果内部类生命周期长于外部类，会导致泄漏
     }
-    
+
     public static void main(String[] args) {
         MemoryLeakDemo demo = new MemoryLeakDemo();
-        
+
         // 模拟内存泄漏
         for (int i = 0; i < 1000; i++) {
             demo.leak1();
         }
-        
+
         System.out.println("添加了 " + list.size() + " 个对象");
     }
 }
@@ -508,4 +508,3 @@ try (FileInputStream fis = new FileInputStream("file.txt")) {
 ## 📚 下一步
 
 学习完JVM原理后，继续学习 [函数式编程](./函数式编程.md)
-

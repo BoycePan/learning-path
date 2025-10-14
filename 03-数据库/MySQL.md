@@ -22,8 +22,8 @@
 
 ```sql
 -- 创建数据库 ⭐⭐⭐⭐⭐
-CREATE DATABASE IF NOT EXISTS mydb 
-CHARACTER SET utf8mb4 
+CREATE DATABASE IF NOT EXISTS mydb
+CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
 -- 使用数据库
@@ -65,7 +65,7 @@ DROP TABLE IF EXISTS users;
 
 ```sql
 -- 插入数据（INSERT） ⭐⭐⭐⭐⭐
-INSERT INTO users (username, password, email, age) 
+INSERT INTO users (username, password, email, age)
 VALUES ('zhangsan', '123456', 'zhang@example.com', 25);
 
 -- 批量插入（推荐）
@@ -126,19 +126,19 @@ SELECT MAX(age) AS max_age FROM users;  -- 最大值
 SELECT MIN(age) AS min_age FROM users;  -- 最小值
 
 -- 分组 GROUP BY ⭐⭐⭐⭐⭐
-SELECT age, COUNT(*) AS count 
-FROM users 
+SELECT age, COUNT(*) AS count
+FROM users
 GROUP BY age;
 
-SELECT age, AVG(age) AS avg_age 
-FROM users 
-GROUP BY age 
+SELECT age, AVG(age) AS avg_age
+FROM users
+GROUP BY age
 HAVING COUNT(*) > 2;  -- HAVING用于分组后的条件过滤
 
 -- 分组后排序
-SELECT age, COUNT(*) AS count 
-FROM users 
-GROUP BY age 
+SELECT age, COUNT(*) AS count
+FROM users
+GROUP BY age
 ORDER BY count DESC;
 ```
 
@@ -172,11 +172,11 @@ RIGHT JOIN orders o ON u.id = o.user_id;
 
 -- 子查询 ⭐⭐⭐⭐⭐
 -- 查询有订单的用户
-SELECT * FROM users 
+SELECT * FROM users
 WHERE id IN (SELECT DISTINCT user_id FROM orders);
 
 -- 查询购买金额大于平均值的订单
-SELECT * FROM orders 
+SELECT * FROM orders
 WHERE price > (SELECT AVG(price) FROM orders);
 
 -- EXISTS子查询
@@ -356,7 +356,7 @@ public class JDBCDemo {
     private static final String URL = "jdbc:mysql://localhost:3306/mydb?useSSL=false&serverTimezone=UTC&characterEncoding=utf8";
     private static final String USER = "root";
     private static final String PASSWORD = "password";
-    
+
     public static void main(String[] args) {
         // 1. 加载驱动（MySQL 8.0+可省略）
         try {
@@ -364,108 +364,108 @@ public class JDBCDemo {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        
+
         // 插入数据
         insertUser("testuser", "password123", "test@example.com", 25);
-        
+
         // 查询数据
         queryAllUsers();
-        
+
         // 更新数据
         updateUser(1, 26);
-        
+
         // 删除数据
         deleteUser(1);
     }
-    
+
     /**
      * 插入数据 ⭐⭐⭐⭐⭐
      */
-    public static void insertUser(String username, String password, 
+    public static void insertUser(String username, String password,
                                   String email, int age) {
         String sql = "INSERT INTO users(username, password, email, age) VALUES(?,?,?,?)";
-        
+
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
             // 设置参数（防止SQL注入）⭐⭐⭐⭐⭐
             pstmt.setString(1, username);
             pstmt.setString(2, password);
             pstmt.setString(3, email);
             pstmt.setInt(4, age);
-            
+
             int rows = pstmt.executeUpdate();
             System.out.println("插入了 " + rows + " 行数据");
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * 查询数据 ⭐⭐⭐⭐⭐
      */
     public static void queryAllUsers() {
         String sql = "SELECT id, username, email, age FROM users";
-        
+
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-            
+
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String username = rs.getString("username");
                 String email = rs.getString("email");
                 int age = rs.getInt("age");
-                
-                System.out.printf("ID:%d, 用户名:%s, 邮箱:%s, 年龄:%d\n", 
+
+                System.out.printf("ID:%d, 用户名:%s, 邮箱:%s, 年龄:%d\n",
                     id, username, email, age);
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * 更新数据 ⭐⭐⭐⭐⭐
      */
     public static void updateUser(int id, int newAge) {
         String sql = "UPDATE users SET age = ? WHERE id = ?";
-        
+
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
             pstmt.setInt(1, newAge);
             pstmt.setInt(2, id);
-            
+
             int rows = pstmt.executeUpdate();
             System.out.println("更新了 " + rows + " 行数据");
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * 删除数据 ⭐⭐⭐⭐⭐
      */
     public static void deleteUser(int id) {
         String sql = "DELETE FROM users WHERE id = ?";
-        
+
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
             pstmt.setInt(1, id);
-            
+
             int rows = pstmt.executeUpdate();
             System.out.println("删除了 " + rows + " 行数据");
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * 事务处理 ⭐⭐⭐⭐⭐
      */
@@ -475,28 +475,28 @@ public class JDBCDemo {
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
             // 关闭自动提交
             conn.setAutoCommit(false);
-            
+
             String deductSql = "UPDATE accounts SET balance = balance - ? WHERE id = ?";
             String addSql = "UPDATE accounts SET balance = balance + ? WHERE id = ?";
-            
+
             try (PreparedStatement deduct = conn.prepareStatement(deductSql);
                  PreparedStatement add = conn.prepareStatement(addSql)) {
-                
+
                 // 扣款
                 deduct.setDouble(1, amount);
                 deduct.setInt(2, fromId);
                 deduct.executeUpdate();
-                
+
                 // 加款
                 add.setDouble(1, amount);
                 add.setInt(2, toId);
                 add.executeUpdate();
-                
+
                 // 提交事务
                 conn.commit();
                 System.out.println("转账成功！");
             }
-            
+
         } catch (SQLException e) {
             // 回滚事务
             if (conn != null) {
@@ -556,13 +556,13 @@ public class JDBCDemo {
 
 ```sql
 -- 分页查询 ⭐⭐⭐⭐⭐
-SELECT * FROM users 
-WHERE status = 1 
-ORDER BY create_time DESC 
+SELECT * FROM users
+WHERE status = 1
+ORDER BY create_time DESC
 LIMIT 20 OFFSET 0;
 
 -- 统计查询 ⭐⭐⭐⭐⭐
-SELECT 
+SELECT
     COUNT(*) AS total,
     COUNT(DISTINCT user_id) AS unique_users,
     SUM(amount) AS total_amount,
@@ -571,7 +571,7 @@ FROM orders
 WHERE order_time >= '2024-01-01';
 
 -- 关联查询 ⭐⭐⭐⭐⭐
-SELECT 
+SELECT
     u.username,
     COUNT(o.id) AS order_count,
     SUM(o.amount) AS total_amount
@@ -593,4 +593,3 @@ ORDER BY total_amount DESC;
 ## 📚 下一步
 
 学习完MySQL后，继续学习 [Redis](./Redis.md)
-
