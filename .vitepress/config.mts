@@ -1,15 +1,14 @@
 import { defineConfig } from "vitepress";
 
 export default defineConfig({
-  // ⚠️ 部署到 GitHub Pages 时需要配置 base
-  // 如果仓库名是 java-learning-path，则设置为：base: '/java-learning-path/'
-  // 如果仓库名是 你的用户名.github.io，则设置为：base: '/'
-  // 本地开发时可以注释掉或设置为 '/'
-  base: "/learning-path/", // 部署时取消注释并修改为你的仓库名
-
+  base: "/learning-path/",
   title: "Java学习路线 2025",
   description: "详细的Java学习路线，从基础到微服务",
   lang: "zh-CN",
+  head: [
+    // 添加图标
+    ["link", { rel: "icon", href: "/icon/favicon.ico" }],
+  ],
 
   themeConfig: {
     nav: [
@@ -78,7 +77,10 @@ export default defineConfig({
           { text: "微服务架构", link: "/05-微服务与中间件/微服务架构" },
           { text: "消息队列", link: "/05-微服务与中间件/消息队列" },
           { text: "分布式技术", link: "/05-微服务与中间件/分布式技术" },
-          { text: "DDD领域驱动设计", link: "/05-微服务与中间件/DDD领域驱动设计" },
+          {
+            text: "DDD领域驱动设计",
+            link: "/05-微服务与中间件/DDD领域驱动设计",
+          },
         ],
       },
       {
