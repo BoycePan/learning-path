@@ -7,7 +7,7 @@ export default defineConfig({
   lang: "zh-CN",
   head: [
     // 添加图标
-    ["link", { rel: "icon", href: "/icon/favicon.ico" }],
+    ["link", { rel: "icon", href: "/favicon.ico" }],
   ],
 
   themeConfig: {
