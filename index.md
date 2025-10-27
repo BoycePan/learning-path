@@ -14,14 +14,19 @@ hero:
       link: https://github.com
 
 features:
+  - icon: 🛠️
+    title: 开发环境与工具
+    details: 搭建开发环境，掌握Maven、Git、Docker、Linux等必备工具
+    link: /00-开发环境与工具/开发环境搭建
+
   - icon: ☕
     title: Java基础
-    details: 掌握Java核心语法、面向对象编程、集合框架、异常处理等基础知识
+    details: 掌握Java核心语法、面向对象、集合框架、泛型、注解、反射等基础知识
     link: /01-Java基础/基础语法
 
   - icon: 🚀
     title: Java进阶
-    details: 深入学习多线程、IO/NIO、JVM原理、函数式编程等高级特性
+    details: 深入学习多线程、IO/NIO、JVM原理、设计模式、单元测试等高级特性
     link: /02-Java进阶/多线程并发
 
   - icon: 💾
@@ -31,18 +36,23 @@ features:
 
   - icon: 🌱
     title: Spring生态
-    details: 掌握Spring、Spring Boot、Spring Cloud微服务开发
+    details: 掌握Spring、Spring Boot、Spring Cloud、Spring Security微服务开发
     link: /04-Spring生态/Spring核心
 
   - icon: ☁️
     title: 微服务架构
-    details: 学习微服务设计、消息队列、分布式技术
+    details: 学习微服务设计、消息队列、分布式技术、Kubernetes、服务监控
     link: /05-微服务与中间件/微服务架构
 
   - icon: 💼
     title: 项目实战
     details: 通过实战项目巩固所学知识，积累开发经验
     link: /06-项目实战/项目实战
+
+  - icon: 🎯
+    title: 面试与进阶
+    details: 精选高频Java面试题，助力求职和技术提升
+    link: /07-面试与进阶/Java面试题精选
 ---
 
 ## 📖 关于本学习路线
@@ -51,26 +61,30 @@ features:
 
 ### ✨ 特点
 
-- **📚 系统完整** - 从基础到进阶，从理论到实战
+- **📚 系统完整** - 从环境搭建到面试准备，8个阶段全覆盖
 - **🎯 重点突出** - 用⭐标注重要程度，聚焦核心知识
 - **💻 代码丰富** - 每个知识点都有详细的代码示例
 - **🔥 紧跟潮流** - 摒弃过时技术，学习企业实际应用
-- **⏱️ 时间规划** - 合理安排学习时长，约10-12个月
+- **⏱️ 时间规划** - 合理安排学习时长，约12-14个月
 
 ### 🎓 学习阶段
 
-```
+```text
+第零阶段：开发环境与工具（1个月）
+    ↓
 第一阶段：Java基础（2-3个月）
     ↓
-第二阶段：Java进阶（2个月）
+第二阶段：Java进阶（2.5个月）
     ↓
 第三阶段：数据库技术（1.5个月）
     ↓
-第四阶段：Spring生态（3个月）
+第四阶段：Spring生态（3.5个月）
     ↓
-第五阶段：微服务与中间件（2个月）
+第五阶段：微服务与中间件（3个月）
     ↓
 第六阶段：项目实战（持续）
+    ↓
+第七阶段：面试与进阶（持续）
 ```
 
 ### 🚫 不学习的过时技术

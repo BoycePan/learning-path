@@ -4,6 +4,7 @@
   "description": "> 这是一份针对2025年最新技术栈的Java完整学习路线，摒弃过时技术，聚焦企业实际应用。",
   "main": "index.js",
   "scripts": {
+    "dev": "vitepress dev",
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview",
