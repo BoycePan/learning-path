@@ -710,6 +710,13 @@ public interface UserMapper extends BaseMapper<User> {
      * 批量插入（高性能）⭐⭐⭐⭐⭐
      */
     int insertBatchSomeColumn(List<User> userList);
+
+    /**
+     * 自定义更新 - 使用 @Update 注解结合 Wrapper ⭐⭐⭐⭐⭐
+     * 注意：使用 ${ew.customSqlSegment} 获取 Wrapper 生成的 SQL 片段
+     */
+    @Update("UPDATE user SET balance = balance - #{amount} ${ew.customSqlSegment}")
+    void updateBalanceByWrapper(@Param("amount") int amount, @Param("ew") LambdaQueryWrapper<User> queryWrapper);
 }
 ```
 
@@ -1027,7 +1034,905 @@ public class UserServiceExample {
 }
 ````
 
-### 6.8 代码生成器 ⭐⭐⭐⭐⭐
+### 6.8 条件构造器详解 ⭐⭐⭐⭐⭐
+
+MyBatis-Plus 提供了强大的条件构造器（Wrapper），用于动态构建 SQL 查询条件，避免手写复杂的 XML 动态 SQL。
+
+#### 6.8.1 条件构造器类型 ⭐⭐⭐⭐⭐
+
+```java
+/**
+ * 条件构造器类型说明 ⭐⭐⭐⭐⭐
+ */
+public class WrapperTypes {
+
+    // 1. QueryWrapper - 普通查询构造器（字符串字段名）⭐⭐⭐⭐
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+
+    // 2. LambdaQueryWrapper - Lambda查询构造器（类型安全，推荐）⭐⭐⭐⭐⭐
+    LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+
+    // 3. UpdateWrapper - 普通更新构造器 ⭐⭐⭐⭐
+    UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+
+    // 4. LambdaUpdateWrapper - Lambda更新构造器（推荐）⭐⭐⭐⭐⭐
+    LambdaUpdateWrapper<User> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+}
+```
+
+#### 6.8.2 比较条件方法 ⭐⭐⭐⭐⭐
+
+```java
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.springframework.stereotype.Service;
+
+/**
+ * 比较条件方法示例 ⭐⭐⭐⭐⭐
+ */
+@Service
+public class ComparisonConditions {
+
+    @Autowired
+    private UserMapper userMapper;
+
+    public void comparisonMethods() {
+        // eq - 等于（=）⭐⭐⭐⭐⭐
+        List<User> users1 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .eq(User::getUsername, "zhangsan")  // WHERE username = 'zhangsan'
+        );
+
+        // ne - 不等于（<>）⭐⭐⭐⭐
+        List<User> users2 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .ne(User::getStatus, 0)  // WHERE status <> 0
+        );
+
+        // gt - 大于（>）⭐⭐⭐⭐⭐
+        List<User> users3 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .gt(User::getAge, 18)  // WHERE age > 18
+        );
+
+        // ge - 大于等于（>=）⭐⭐⭐⭐⭐
+        List<User> users4 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .ge(User::getAge, 18)  // WHERE age >= 18
+        );
+
+        // lt - 小于（<）⭐⭐⭐⭐⭐
+        List<User> users5 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .lt(User::getAge, 60)  // WHERE age < 60
+        );
+
+        // le - 小于等于（<=）⭐⭐⭐⭐⭐
+        List<User> users6 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .le(User::getAge, 60)  // WHERE age <= 60
+        );
+
+        // between - 范围查询（BETWEEN）⭐⭐⭐⭐⭐
+        List<User> users7 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .between(User::getAge, 18, 60)  // WHERE age BETWEEN 18 AND 60
+        );
+
+        // notBetween - 不在范围内（NOT BETWEEN）⭐⭐⭐⭐
+        List<User> users8 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .notBetween(User::getAge, 0, 18)  // WHERE age NOT BETWEEN 0 AND 18
+        );
+    }
+}
+```
+
+#### 6.8.3 模糊查询方法 ⭐⭐⭐⭐⭐
+
+```java
+/**
+ * 模糊查询方法示例 ⭐⭐⭐⭐⭐
+ */
+@Service
+public class LikeConditions {
+
+    @Autowired
+    private UserMapper userMapper;
+
+    public void likeMethods() {
+        String keyword = "zhang";
+
+        // like - 模糊查询（%value%）⭐⭐⭐⭐⭐
+        List<User> users1 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .like(User::getUsername, keyword)  // WHERE username LIKE '%zhang%'
+        );
+
+        // notLike - 不包含（NOT LIKE %value%）⭐⭐⭐⭐
+        List<User> users2 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .notLike(User::getUsername, "test")  // WHERE username NOT LIKE '%test%'
+        );
+
+        // likeLeft - 左模糊（%value）⭐⭐⭐⭐⭐
+        List<User> users3 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .likeLeft(User::getEmail, "@qq.com")  // WHERE email LIKE '%@qq.com'
+        );
+
+        // likeRight - 右模糊（value%）⭐⭐⭐⭐⭐
+        List<User> users4 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .likeRight(User::getUsername, "admin")  // WHERE username LIKE 'admin%'
+        );
+
+        // notLikeLeft - 左不包含（NOT LIKE %value）⭐⭐⭐
+        List<User> users5 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .notLikeLeft(User::getEmail, "@test.com")
+        );
+
+        // notLikeRight - 右不包含（NOT LIKE value%）⭐⭐⭐
+        List<User> users6 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .notLikeRight(User::getUsername, "test")
+        );
+    }
+}
+```
+
+#### 6.8.4 空值判断方法 ⭐⭐⭐⭐⭐
+
+```java
+/**
+ * 空值判断方法示例 ⭐⭐⭐⭐⭐
+ */
+@Service
+public class NullConditions {
+
+    @Autowired
+    private UserMapper userMapper;
+
+    public void nullMethods() {
+        // isNull - 为空（IS NULL）⭐⭐⭐⭐⭐
+        List<User> users1 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .isNull(User::getEmail)  // WHERE email IS NULL
+        );
+
+        // isNotNull - 不为空（IS NOT NULL）⭐⭐⭐⭐⭐
+        List<User> users2 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .isNotNull(User::getEmail)  // WHERE email IS NOT NULL
+        );
+    }
+}
+```
+
+#### 6.8.5 IN 查询方法 ⭐⭐⭐⭐⭐
+
+```java
+/**
+ * IN 查询方法示例 ⭐⭐⭐⭐⭐
+ */
+@Service
+public class InConditions {
+
+    @Autowired
+    private UserMapper userMapper;
+
+    public void inMethods() {
+        // in - IN 查询 ⭐⭐⭐⭐⭐
+        List<Long> ids = Arrays.asList(1L, 2L, 3L, 4L, 5L);
+        List<User> users1 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .in(User::getId, ids)  // WHERE id IN (1, 2, 3, 4, 5)
+        );
+
+        // 单个值也可以用 in
+        List<User> users2 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .in(User::getStatus, 1)  // WHERE status IN (1)
+        );
+
+        // notIn - NOT IN 查询 ⭐⭐⭐⭐⭐
+        List<User> users3 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .notIn(User::getId, ids)  // WHERE id NOT IN (1, 2, 3, 4, 5)
+        );
+
+        // inSql - IN 子查询 ⭐⭐⭐⭐
+        List<User> users4 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .inSql(User::getId, "SELECT user_id FROM t_user_role WHERE role_id = 1")
+                // WHERE id IN (SELECT user_id FROM t_user_role WHERE role_id = 1)
+        );
+
+        // notInSql - NOT IN 子查询 ⭐⭐⭐⭐
+        List<User> users5 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .notInSql(User::getId, "SELECT user_id FROM t_user_role WHERE role_id = 2")
+        );
+    }
+}
+```
+
+#### 6.8.6 逻辑条件方法 ⭐⭐⭐⭐⭐
+
+```java
+/**
+ * 逻辑条件方法示例 ⭐⭐⭐⭐⭐
+ */
+@Service
+public class LogicalConditions {
+
+    @Autowired
+    private UserMapper userMapper;
+
+    public void logicalMethods() {
+        // or - 或条件（OR）⭐⭐⭐⭐⭐
+        // 示例1：简单 OR
+        List<User> users1 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .eq(User::getUsername, "zhangsan")
+                .or()
+                .eq(User::getEmail, "zhang@example.com")
+                // WHERE username = 'zhangsan' OR email = 'zhang@example.com'
+        );
+
+        // 示例2：嵌套 OR（重要）⭐⭐⭐⭐⭐
+        List<User> users2 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .eq(User::getStatus, 1)
+                .and(wrapper -> wrapper
+                    .eq(User::getUsername, "zhangsan")
+                    .or()
+                    .eq(User::getEmail, "zhang@example.com")
+                )
+                // WHERE status = 1 AND (username = 'zhangsan' OR email = 'zhang@example.com')
+        );
+
+        // and - 嵌套 AND 条件 ⭐⭐⭐⭐⭐
+        String keyword = "zhang";
+        List<User> users3 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .eq(User::getStatus, 1)
+                .and(wrapper -> wrapper
+                    .like(User::getUsername, keyword)
+                    .or()
+                    .like(User::getEmail, keyword)
+                )
+                // WHERE status = 1 AND (username LIKE '%zhang%' OR email LIKE '%zhang%')
+        );
+
+        // nested - 嵌套条件（同 and）⭐⭐⭐⭐
+        List<User> users4 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .nested(wrapper -> wrapper
+                    .eq(User::getAge, 25)
+                    .or()
+                    .eq(User::getAge, 30)
+                )
+                .eq(User::getStatus, 1)
+                // WHERE (age = 25 OR age = 30) AND status = 1
+        );
+
+        // or 嵌套（复杂条件）⭐⭐⭐⭐⭐
+        List<User> users5 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .eq(User::getStatus, 1)
+                .or(wrapper -> wrapper
+                    .eq(User::getAge, 25)
+                    .eq(User::getUsername, "admin")
+                )
+                // WHERE status = 1 OR (age = 25 AND username = 'admin')
+        );
+    }
+}
+```
+
+#### 6.8.7 排序方法 ⭐⭐⭐⭐⭐
+
+```java
+/**
+ * 排序方法示例 ⭐⭐⭐⭐⭐
+ */
+@Service
+public class OrderConditions {
+
+    @Autowired
+    private UserMapper userMapper;
+
+    public void orderMethods() {
+        // orderByAsc - 升序排序（ASC）⭐⭐⭐⭐⭐
+        List<User> users1 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .orderByAsc(User::getAge)  // ORDER BY age ASC
+        );
+
+        // orderByDesc - 降序排序（DESC）⭐⭐⭐⭐⭐
+        List<User> users2 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .orderByDesc(User::getCreateTime)  // ORDER BY create_time DESC
+        );
+
+        // 多字段排序 ⭐⭐⭐⭐⭐
+        List<User> users3 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .orderByDesc(User::getStatus)      // 先按状态降序
+                .orderByAsc(User::getAge)          // 再按年龄升序
+                .orderByDesc(User::getCreateTime)  // 最后按创建时间降序
+                // ORDER BY status DESC, age ASC, create_time DESC
+        );
+
+        // orderBy - 自定义排序 ⭐⭐⭐⭐
+        List<User> users4 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .orderBy(true, true, User::getAge)  // 第二个参数：true=ASC, false=DESC
+        );
+
+        // 动态排序 ⭐⭐⭐⭐⭐
+        String sortField = "age";
+        boolean isAsc = true;
+        List<User> users5 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .orderBy(true, isAsc, User::getAge)
+        );
+    }
+}
+```
+
+#### 6.8.8 字段选择方法 ⭐⭐⭐⭐⭐
+
+```java
+/**
+ * 字段选择方法示例 ⭐⭐⭐⭐⭐
+ */
+@Service
+public class SelectConditions {
+
+    @Autowired
+    private UserMapper userMapper;
+
+    public void selectMethods() {
+        // select - 指定查询字段（推荐）⭐⭐⭐⭐⭐
+        List<User> users1 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .select(User::getId, User::getUsername, User::getEmail)
+                .eq(User::getStatus, 1)
+                // SELECT id, username, email FROM t_user WHERE status = 1
+        );
+
+        // 排除字段（QueryWrapper方式）⭐⭐⭐⭐
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.select(User.class, info ->
+            !info.getColumn().equals("password") &&
+            !info.getColumn().equals("secret_key")
+        );
+        List<User> users2 = userMapper.selectList(wrapper);
+        // SELECT id, username, email, ... FROM t_user (排除 password 和 secret_key)
+
+        // 查询指定字段返回 Map ⭐⭐⭐⭐
+        List<java.util.Map<String, Object>> maps = userMapper.selectMaps(
+            new QueryWrapper<User>()
+                .select("id", "username", "email")
+                .eq("status", 1)
+        );
+    }
+}
+```
+
+#### 6.8.9 分组和聚合方法 ⭐⭐⭐⭐
+
+```java
+/**
+ * 分组和聚合方法示例 ⭐⭐⭐⭐
+ */
+@Service
+public class GroupConditions {
+
+    @Autowired
+    private UserMapper userMapper;
+
+    public void groupMethods() {
+        // groupBy - 分组查询 ⭐⭐⭐⭐⭐
+        List<java.util.Map<String, Object>> result1 = userMapper.selectMaps(
+            new QueryWrapper<User>()
+                .select("age", "COUNT(*) as count")
+                .groupBy("age")
+                // SELECT age, COUNT(*) as count FROM t_user GROUP BY age
+        );
+
+        // having - 分组后筛选 ⭐⭐⭐⭐⭐
+        List<java.util.Map<String, Object>> result2 = userMapper.selectMaps(
+            new QueryWrapper<User>()
+                .select("age", "COUNT(*) as count")
+                .groupBy("age")
+                .having("COUNT(*) > 1")
+                // SELECT age, COUNT(*) as count FROM t_user GROUP BY age HAVING COUNT(*) > 1
+        );
+
+        // 多字段分组 ⭐⭐⭐⭐
+        List<java.util.Map<String, Object>> result3 = userMapper.selectMaps(
+            new QueryWrapper<User>()
+                .select("status", "age", "COUNT(*) as count")
+                .groupBy("status", "age")
+                .orderByDesc("count")
+                // SELECT status, age, COUNT(*) as count FROM t_user
+                // GROUP BY status, age ORDER BY count DESC
+        );
+
+        // 聚合函数 ⭐⭐⭐⭐⭐
+        java.util.Map<String, Object> aggregateResult = userMapper.selectMaps(
+            new QueryWrapper<User>()
+                .select("COUNT(*) as total",
+                       "AVG(age) as avgAge",
+                       "MAX(age) as maxAge",
+                       "MIN(age) as minAge",
+                       "SUM(age) as sumAge")
+                .eq("status", 1)
+        ).get(0);
+    }
+}
+```
+
+#### 6.8.10 UpdateWrapper 更新方法 ⭐⭐⭐⭐⭐
+
+```java
+/**
+ * UpdateWrapper 更新方法示例 ⭐⭐⭐⭐⭐
+ */
+@Service
+public class UpdateConditions {
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private UserService userService;
+
+    public void updateMethods() {
+        // set - 设置字段值 ⭐⭐⭐⭐⭐
+        boolean success1 = userService.update(
+            new LambdaUpdateWrapper<User>()
+                .set(User::getStatus, 1)
+                .set(User::getUpdateTime, LocalDateTime.now())
+                .eq(User::getId, 1L)
+                // UPDATE t_user SET status = 1, update_time = NOW() WHERE id = 1
+        );
+
+        // setSql - 设置 SQL 片段 ⭐⭐⭐⭐
+        boolean success2 = userService.update(
+            new LambdaUpdateWrapper<User>()
+                .setSql("age = age + 1")  // 年龄加1
+                .eq(User::getId, 1L)
+                // UPDATE t_user SET age = age + 1 WHERE id = 1
+        );
+
+        // 批量更新字段 ⭐⭐⭐⭐⭐
+        boolean success3 = userService.update(
+            new LambdaUpdateWrapper<User>()
+                .set(User::getStatus, 0)
+                .in(User::getId, Arrays.asList(1L, 2L, 3L))
+                // UPDATE t_user SET status = 0 WHERE id IN (1, 2, 3)
+        );
+
+        // 条件更新 ⭐⭐⭐⭐⭐
+        boolean success4 = userService.update(
+            new LambdaUpdateWrapper<User>()
+                .set(User::getStatus, 1)
+                .eq(User::getUsername, "zhangsan")
+                .isNull(User::getEmail)
+                // UPDATE t_user SET status = 1 WHERE username = 'zhangsan' AND email IS NULL
+        );
+
+        // 动态更新（只更新非空字段）⭐⭐⭐⭐⭐
+        User user = new User();
+        user.setUsername("newname");
+        user.setEmail("new@example.com");
+        // age 为 null，不会更新
+
+        boolean success5 = userService.update(user,
+            new LambdaUpdateWrapper<User>()
+                .eq(User::getId, 1L)
+        );
+        // UPDATE t_user SET username = 'newname', email = 'new@example.com' WHERE id = 1
+
+        // 使用 @Update 注解结合 Wrapper（Mapper 层自定义方法）⭐⭐⭐⭐⭐
+        // 场景：扣减用户余额，支持动态条件
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getId, 1L)
+               .ge(User::getBalance, 100);  // 余额必须大于等于100才能扣减
+        userMapper.updateBalanceByWrapper(100, wrapper);
+        // UPDATE user SET balance = balance - 100 WHERE id = 1 AND balance >= 100
+    }
+}
+```
+
+#### 6.8.11 其他实用方法 ⭐⭐⭐⭐⭐
+
+```java
+/**
+ * 其他实用方法示例 ⭐⭐⭐⭐⭐
+ */
+@Service
+public class OtherConditions {
+
+    @Autowired
+    private UserMapper userMapper;
+
+    public void otherMethods() {
+        // last - 拼接 SQL 片段（慎用，有SQL注入风险）⭐⭐⭐⭐
+        List<User> users1 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .eq(User::getStatus, 1)
+                .last("LIMIT 10")  // 限制返回10条
+                // SELECT * FROM t_user WHERE status = 1 LIMIT 10
+        );
+
+        // exists - EXISTS 子查询 ⭐⭐⭐⭐
+        List<User> users2 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .exists("SELECT 1 FROM t_user_role WHERE user_id = t_user.id AND role_id = 1")
+                // WHERE EXISTS (SELECT 1 FROM t_user_role WHERE user_id = t_user.id AND role_id = 1)
+        );
+
+        // notExists - NOT EXISTS 子查询 ⭐⭐⭐⭐
+        List<User> users3 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .notExists("SELECT 1 FROM t_user_role WHERE user_id = t_user.id")
+        );
+
+        // apply - 拼接 SQL（支持占位符，相对安全）⭐⭐⭐⭐
+        List<User> users4 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .apply("date_format(create_time, '%Y-%m-%d') = {0}", "2024-01-01")
+                // WHERE date_format(create_time, '%Y-%m-%d') = '2024-01-01'
+        );
+
+        // func - 函数式编程 ⭐⭐⭐⭐
+        List<User> users5 = userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .func(wrapper -> {
+                    wrapper.eq(User::getStatus, 1);
+                    // 可以在这里写复杂的条件逻辑
+                })
+        );
+    }
+}
+```
+
+#### 6.8.12 动态条件构造（重要）⭐⭐⭐⭐⭐
+
+```java
+/**
+ * 动态条件构造示例（实际开发中最常用）⭐⭐⭐⭐⭐
+ */
+@Service
+public class DynamicConditions {
+
+    @Autowired
+    private UserMapper userMapper;
+
+    /**
+     * 方式1：使用条件参数（推荐）⭐⭐⭐⭐⭐
+     */
+    public List<User> dynamicQuery1(String username, Integer minAge, Integer maxAge, Integer status) {
+        return userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                // 第一个参数为 true 时才会拼接该条件
+                .like(StringUtils.isNotBlank(username), User::getUsername, username)
+                .ge(minAge != null, User::getAge, minAge)
+                .le(maxAge != null, User::getAge, maxAge)
+                .eq(status != null, User::getStatus, status)
+                .orderByDesc(User::getCreateTime)
+        );
+    }
+
+    /**
+     * 方式2：使用 DTO 对象（推荐）⭐⭐⭐⭐⭐
+     */
+    public List<User> dynamicQuery2(UserQueryDTO dto) {
+        return userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .like(StringUtils.isNotBlank(dto.getKeyword()), User::getUsername, dto.getKeyword())
+                .or(StringUtils.isNotBlank(dto.getKeyword()))
+                .like(StringUtils.isNotBlank(dto.getKeyword()), User::getEmail, dto.getKeyword())
+                .between(dto.getMinAge() != null && dto.getMaxAge() != null,
+                        User::getAge, dto.getMinAge(), dto.getMaxAge())
+                .in(CollectionUtils.isNotEmpty(dto.getStatusList()),
+                    User::getStatus, dto.getStatusList())
+                .ge(dto.getStartTime() != null, User::getCreateTime, dto.getStartTime())
+                .le(dto.getEndTime() != null, User::getCreateTime, dto.getEndTime())
+                .orderByDesc(User::getCreateTime)
+        );
+    }
+
+    /**
+     * 方式3：复杂嵌套条件 ⭐⭐⭐⭐⭐
+     */
+    public List<User> dynamicQuery3(String keyword, List<Integer> ages, Integer status) {
+        return userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                // 状态筛选
+                .eq(status != null, User::getStatus, status)
+                // 关键词搜索（username OR email）
+                .and(StringUtils.isNotBlank(keyword), wrapper -> wrapper
+                    .like(User::getUsername, keyword)
+                    .or()
+                    .like(User::getEmail, keyword)
+                )
+                // 年龄筛选
+                .in(CollectionUtils.isNotEmpty(ages), User::getAge, ages)
+                .orderByDesc(User::getCreateTime)
+        );
+    }
+
+    /**
+     * 方式4：使用 Optional（Java 8+）⭐⭐⭐⭐
+     */
+    public List<User> dynamicQuery4(Optional<String> username, Optional<Integer> age) {
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        username.ifPresent(name -> wrapper.like(User::getUsername, name));
+        age.ifPresent(a -> wrapper.eq(User::getAge, a));
+        return userMapper.selectList(wrapper);
+    }
+}
+
+/**
+ * 查询 DTO 示例
+ */
+@Data
+class UserQueryDTO {
+    private String keyword;        // 关键词（用户名或邮箱）
+    private Integer minAge;        // 最小年龄
+    private Integer maxAge;        // 最大年龄
+    private List<Integer> statusList;  // 状态列表
+    private LocalDateTime startTime;   // 开始时间
+    private LocalDateTime endTime;     // 结束时间
+}
+```
+
+#### 6.8.13 条件构造器最佳实践 ⭐⭐⭐⭐⭐
+
+```java
+/**
+ * 条件构造器最佳实践 ⭐⭐⭐⭐⭐
+ */
+@Service
+public class WrapperBestPractices {
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private UserService userService;
+
+    // ✅ 推荐：使用 Lambda 方式（类型安全）⭐⭐⭐⭐⭐
+    public List<User> goodExample1() {
+        return userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .eq(User::getStatus, 1)  // 编译时检查，不会拼错字段名
+                .like(User::getUsername, "zhang")
+        );
+    }
+
+    // ❌ 不推荐：使用字符串方式（容易拼错）
+    public List<User> badExample1() {
+        return userMapper.selectList(
+            new QueryWrapper<User>()
+                .eq("status", 1)  // 容易拼错字段名
+                .like("user_name", "zhang")  // 字段名错误
+        );
+    }
+
+    // ✅ 推荐：动态条件在 wrapper 中判断 ⭐⭐⭐⭐⭐
+    public List<User> goodExample2(String keyword, Integer age) {
+        return userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .like(StringUtils.isNotBlank(keyword), User::getUsername, keyword)
+                .eq(age != null, User::getAge, age)
+        );
+    }
+
+    // ❌ 不推荐：在 wrapper 外判断（代码冗余）
+    public List<User> badExample2(String keyword, Integer age) {
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        if (StringUtils.isNotBlank(keyword)) {
+            wrapper.like(User::getUsername, keyword);
+        }
+        if (age != null) {
+            wrapper.eq(User::getAge, age);
+        }
+        return userMapper.selectList(wrapper);
+    }
+
+    // ✅ 推荐：只查询需要的字段 ⭐⭐⭐⭐⭐
+    public List<User> goodExample3() {
+        return userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .select(User::getId, User::getUsername, User::getEmail)
+                .eq(User::getStatus, 1)
+        );
+    }
+
+    // ❌ 不推荐：查询所有字段但只用几个
+    public List<User> badExample3() {
+        return userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .eq(User::getStatus, 1)
+        );
+        // 查询了所有字段，但可能只用 id、username、email
+    }
+
+    // ✅ 推荐：使用 Service 层的链式操作 ⭐⭐⭐⭐⭐
+    public List<User> goodExample4(String keyword) {
+        return userService.lambdaQuery()
+            .like(StringUtils.isNotBlank(keyword), User::getUsername, keyword)
+            .orderByDesc(User::getCreateTime)
+            .list();
+    }
+
+    // ✅ 推荐：复杂条件使用嵌套 ⭐⭐⭐⭐⭐
+    public List<User> goodExample5(String keyword, Integer status) {
+        return userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .eq(status != null, User::getStatus, status)
+                .and(StringUtils.isNotBlank(keyword), wrapper -> wrapper
+                    .like(User::getUsername, keyword)
+                    .or()
+                    .like(User::getEmail, keyword)
+                )
+        );
+        // WHERE status = 1 AND (username LIKE '%keyword%' OR email LIKE '%keyword%')
+    }
+
+    // ❌ 不推荐：复杂条件不使用嵌套（逻辑错误）
+    public List<User> badExample5(String keyword, Integer status) {
+        return userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .eq(status != null, User::getStatus, status)
+                .like(StringUtils.isNotBlank(keyword), User::getUsername, keyword)
+                .or()
+                .like(StringUtils.isNotBlank(keyword), User::getEmail, keyword)
+        );
+        // WHERE status = 1 AND username LIKE '%keyword%' OR email LIKE '%keyword%'
+        // 逻辑错误！OR 优先级问题
+    }
+}
+```
+
+#### 6.8.14 常见业务场景示例 ⭐⭐⭐⭐⭐
+
+```java
+/**
+ * 常见业务场景示例 ⭐⭐⭐⭐⭐
+ */
+@Service
+public class BusinessScenarios {
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private UserService userService;
+
+    /**
+     * 场景1：用户列表搜索（关键词 + 状态 + 时间范围）⭐⭐⭐⭐⭐
+     */
+    public Page<User> searchUsers(int current, int size, String keyword,
+                                  Integer status, LocalDateTime startTime, LocalDateTime endTime) {
+        return userService.lambdaQuery()
+            // 关键词搜索（用户名或邮箱）
+            .and(StringUtils.isNotBlank(keyword), wrapper -> wrapper
+                .like(User::getUsername, keyword)
+                .or()
+                .like(User::getEmail, keyword)
+            )
+            // 状态筛选
+            .eq(status != null, User::getStatus, status)
+            // 时间范围
+            .ge(startTime != null, User::getCreateTime, startTime)
+            .le(endTime != null, User::getCreateTime, endTime)
+            // 排序
+            .orderByDesc(User::getCreateTime)
+            // 分页
+            .page(new Page<>(current, size));
+    }
+
+    /**
+     * 场景2：批量更新用户状态 ⭐⭐⭐⭐⭐
+     */
+    public boolean batchUpdateStatus(List<Long> ids, Integer status) {
+        return userService.update(
+            new LambdaUpdateWrapper<User>()
+                .set(User::getStatus, status)
+                .set(User::getUpdateTime, LocalDateTime.now())
+                .in(User::getId, ids)
+        );
+    }
+
+    /**
+     * 场景3：统计各年龄段用户数量 ⭐⭐⭐⭐⭐
+     */
+    public List<java.util.Map<String, Object>> countByAgeGroup() {
+        return userMapper.selectMaps(
+            new QueryWrapper<User>()
+                .select("CASE " +
+                       "WHEN age < 18 THEN '未成年' " +
+                       "WHEN age BETWEEN 18 AND 30 THEN '青年' " +
+                       "WHEN age BETWEEN 31 AND 50 THEN '中年' " +
+                       "ELSE '老年' END as ageGroup",
+                       "COUNT(*) as count")
+                .groupBy("ageGroup")
+                .orderByDesc("count")
+        );
+    }
+
+    /**
+     * 场景4：查询最近注册的活跃用户 ⭐⭐⭐⭐⭐
+     */
+    public List<User> getRecentActiveUsers(int days, int limit) {
+        LocalDateTime startTime = LocalDateTime.now().minusDays(days);
+        return userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .select(User::getId, User::getUsername, User::getEmail, User::getCreateTime)
+                .eq(User::getStatus, 1)  // 状态：启用
+                .ge(User::getCreateTime, startTime)  // 最近N天注册
+                .orderByDesc(User::getCreateTime)
+                .last("LIMIT " + limit)
+        );
+    }
+
+    /**
+     * 场景5：查询指定角色的用户（关联查询）⭐⭐⭐⭐⭐
+     */
+    public List<User> getUsersByRole(Long roleId) {
+        return userMapper.selectList(
+            new LambdaQueryWrapper<User>()
+                .inSql(User::getId,
+                      "SELECT user_id FROM t_user_role WHERE role_id = " + roleId)
+                .eq(User::getStatus, 1)
+                .orderByDesc(User::getCreateTime)
+        );
+    }
+
+    /**
+     * 场景6：软删除用户（逻辑删除）⭐⭐⭐⭐⭐
+     */
+    public boolean softDeleteUsers(List<Long> ids) {
+        // 如果配置了逻辑删除，直接调用 removeByIds 即可
+        return userService.removeByIds(ids);
+        // 实际执行：UPDATE t_user SET deleted = 1 WHERE id IN (...)
+    }
+
+    /**
+     * 场景7：恢复已删除的用户 ⭐⭐⭐⭐
+     */
+    public boolean restoreUsers(List<Long> ids) {
+        return userService.update(
+            new LambdaUpdateWrapper<User>()
+                .set(User::getDeleted, 0)  // 恢复
+                .in(User::getId, ids)
+        );
+    }
+
+    /**
+     * 场景8：查询重复用户名 ⭐⭐⭐⭐
+     */
+    public List<java.util.Map<String, Object>> findDuplicateUsernames() {
+        return userMapper.selectMaps(
+            new QueryWrapper<User>()
+                .select("username", "COUNT(*) as count")
+                .groupBy("username")
+                .having("COUNT(*) > 1")
+                .orderByDesc("count")
+        );
+    }
+}
+```
+
+### 6.9 代码生成器 ⭐⭐⭐⭐⭐
 
 ```java
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
@@ -1119,7 +2024,7 @@ public class CodeGenerator {
 }
 ```
 
-### 6.9 XML映射文件（自定义复杂SQL）⭐⭐⭐⭐⭐
+### 6.10 XML映射文件（自定义复杂SQL）⭐⭐⭐⭐⭐
 
 ```xml
 <!-- UserMapper.xml -->
@@ -1174,7 +2079,7 @@ public class CodeGenerator {
 </mapper>
 ```
 
-### 6.10 性能优化建议 ⭐⭐⭐⭐⭐
+### 6.11 性能优化建议 ⭐⭐⭐⭐⭐
 
 ```java
 /**
