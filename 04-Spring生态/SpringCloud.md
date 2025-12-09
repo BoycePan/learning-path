@@ -10,10 +10,10 @@
 
 ## ⭐ Spring Cloud核心组件
 
-- **Nacos** - 服务注册与配置中心 ⭐⭐⭐⭐⭐ (推荐)
+- **Nacos** - 服务注册与配置中心 ⭐⭐⭐⭐⭐ ([详见完整指南](/05-微服务与中间件/Nacos.md))
 - **OpenFeign** - 声明式服务调用 ⭐⭐⭐⭐⭐
-- **Gateway** - 网关 ⭐⭐⭐⭐⭐
-- **Sentinel** - 流量控制和熔断降级 ⭐⭐⭐⭐⭐
+- **Gateway** - 网关 ⭐⭐⭐⭐⭐ ([详见完整指南](/04-Spring生态/Spring%20Cloud网关.md))
+- **Sentinel** - 流量控制和熔断降级 ⭐⭐⭐⭐⭐ ([详见完整指南](/05-微服务与中间件/Sentinel.md))
 
 > **注意**：本文档聚焦2025年主流技术，不再介绍已淘汰的Eureka、Ribbon、Hystrix、Zuul、Config等组件。
 

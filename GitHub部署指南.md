@@ -106,7 +106,7 @@ VitePress 的配置文件，包含：
 // .vitepress/config.mts
 export default defineConfig({
   base: "/java-learning-path/", // ⚠️ 注意斜杠
-  title: "Java学习路线 2025",
+  title: "Java学习",
   // ...
 });
 ```

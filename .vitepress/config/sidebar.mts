@@ -61,6 +61,15 @@ export const sidebar: DefaultTheme.Sidebar = [
       { text: "Spring核心", link: "/04-Spring生态/Spring核心" },
       { text: "Spring Boot", link: "/04-Spring生态/SpringBoot" },
       { text: "Spring Cloud", link: "/04-Spring生态/SpringCloud" },
+      { text: "Spring Cloud网关", link: "/04-Spring生态/Spring Cloud网关" },
+      {
+        text: "网关高性能优化",
+        link: "/04-Spring生态/Spring Cloud网关高性能优化",
+      },
+      {
+        text: "网关测试与监控",
+        link: "/04-Spring生态/Spring Cloud网关测试与监控",
+      },
       { text: "Spring Security", link: "/04-Spring生态/Spring Security" },
       { text: "Spring Data JPA", link: "/04-Spring生态/Spring Data JPA" },
     ],
@@ -70,7 +79,10 @@ export const sidebar: DefaultTheme.Sidebar = [
     collapsed: true,
     items: [
       { text: "微服务架构", link: "/05-微服务与中间件/微服务架构" },
+      { text: "Nacos", link: "/05-微服务与中间件/Nacos" },
       { text: "消息队列", link: "/05-微服务与中间件/消息队列" },
+      { text: "Sentinel", link: "/05-微服务与中间件/Sentinel" },
+      { text: "Seata", link: "/05-微服务与中间件/Seata" },
       { text: "分布式技术", link: "/05-微服务与中间件/分布式技术" },
       {
         text: "DDD领域驱动设计",

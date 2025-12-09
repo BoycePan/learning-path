@@ -75,13 +75,16 @@
 
 ### 第四阶段：Spring生态（3.5个月）
 
-| 主题            | 详细文档                                                                   | 重要程度   | 学习时长 |
-| --------------- | -------------------------------------------------------------------------- | ---------- | -------- |
-| Spring核心      | [04-Spring生态/Spring核心.md](./04-Spring生态/Spring核心.md)               | ⭐⭐⭐⭐⭐ | 3周      |
-| Spring Boot     | [04-Spring生态/SpringBoot.md](./04-Spring生态/SpringBoot.md)               | ⭐⭐⭐⭐⭐ | 5周      |
-| Spring Cloud    | [04-Spring生态/SpringCloud.md](./04-Spring生态/SpringCloud.md)             | ⭐⭐⭐⭐   | 4周      |
-| Spring Security | [04-Spring生态/Spring Security.md](./04-Spring生态/Spring%20Security.md)   | ⭐⭐⭐⭐⭐ | 2周      |
-| Spring Data JPA | [04-Spring生态/Spring Data JPA.md](./04-Spring生态/Spring%20Data%20JPA.md) | ⭐⭐⭐⭐   | 2周      |
+| 主题            | 详细文档                                                                     | 重要程度   | 学习时长 |
+| --------------- | ---------------------------------------------------------------------------- | ---------- | -------- |
+| Spring核心      | [04-Spring生态/Spring核心.md](./04-Spring生态/Spring核心.md)                 | ⭐⭐⭐⭐⭐ | 3周      |
+| Spring Boot     | [04-Spring生态/SpringBoot.md](./04-Spring生态/SpringBoot.md)                 | ⭐⭐⭐⭐⭐ | 5周      |
+| Spring Cloud    | [04-Spring生态/SpringCloud.md](./04-Spring生态/SpringCloud.md)               | ⭐⭐⭐⭐   | 4周      |
+| **Cloud网关**   | [04-Spring生态/Spring Cloud网关.md](./04-Spring生态/Spring%20Cloud网关.md)   | ⭐⭐⭐⭐⭐ | 2周      |
+| **网关优化**    | [04-Spring生态/Spring Cloud网关高性能优化.md](./04-Spring生态/Spring%20Cloud网关高性能优化.md) | ⭐⭐⭐⭐⭐ | 1周 |
+| **网关测试**    | [04-Spring生态/Spring Cloud网关测试与监控.md](./04-Spring生态/Spring%20Cloud网关测试与监控.md) | ⭐⭐⭐⭐   | 1周 |
+| Spring Security | [04-Spring生态/Spring Security.md](./04-Spring生态/Spring%20Security.md)     | ⭐⭐⭐⭐⭐ | 2周      |
+| Spring Data JPA | [04-Spring生态/Spring Data JPA.md](./04-Spring生态/Spring%20Data%20JPA.md)   | ⭐⭐⭐⭐   | 2周      |
 
 ### 第五阶段：微服务与中间件（3个月）
 
